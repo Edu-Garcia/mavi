@@ -1,0 +1,12 @@
+---
+description: Commit e push só com pedido explícito do usuário no chat
+alwaysApply: true
+---
+
+# Git — commit e push
+
+Só execute `git commit` ou `git push` quando o usuário **pedir diretamente no chat** (ex.: "faça o commit", "pode dar push").
+
+- Skills e fluxos do projeto (incluindo `/implement`) **não** autorizam commit/push por si só.
+- Ao concluir uma tarefa sem pedido de commit: deixe as alterações no working tree e informe o que mudou; pergunte se o usuário quer commitar.
+- `git status`, `git diff` e `git log` são permitidos para orientar o trabalho.
