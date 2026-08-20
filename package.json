@@ -7,6 +7,11 @@
     "packages/*"
   ],
   "scripts": {
+    "dev:api": "npm run dev --workspace=@mavi/api",
+    "dev:web": "npm run dev --workspace=@mavi/web -- --host 0.0.0.0 --port 5173",
+    "docker:build": "docker compose build",
+    "docker:down": "docker compose down",
+    "docker:up": "docker compose up --build",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },

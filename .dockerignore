@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+build
+coverage
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# Editor / OS
+.cursor
+.vscode
+.DS_Store
+Thumbs.db
+
+# Runtime data (SQLite, screenshots — montados como volume)
+data
+*.db
+*.db-journal
+
+# Docs and agent skills (not needed in image)
+.agents

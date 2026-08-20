@@ -4,12 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "node --experimental-strip-types --watch src/dev-server.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@mavi/shared": "*"
   },
   "devDependencies": {
+    "@types/node": "^22.18.0",
     "typescript": "^5.9.3"
   }
 }
