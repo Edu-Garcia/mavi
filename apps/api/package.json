@@ -4,14 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --experimental-strip-types --watch src/dev-server.ts",
+    "dev": "node --experimental-strip-types --experimental-sqlite --watch src/dev-server.ts",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@mavi/shared": "*"
+    "@mavi/shared": "*",
+    "fastify": "^5.12.1",
+    "playwright": "^1.62.1"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }

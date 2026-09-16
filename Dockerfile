@@ -38,6 +38,7 @@ COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
 
 RUN npm ci
+RUN npx playwright install --with-deps chromium
 
 FROM deps AS development
 

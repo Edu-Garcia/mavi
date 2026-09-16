@@ -36,6 +36,7 @@ Endpoints:
 
 - Dashboard: http://localhost:5173
 - API health: http://localhost:3000/health
+- Captura: `POST http://localhost:3000/analyze` com body `{ "url": "<http(s) ou caminho HTML local>" }`
 
 Parar:
 
@@ -50,10 +51,10 @@ O código é montado como volume; alterações locais refletem nos containers. A
 ## Scripts
 
 ```bash
-npm test        # Vitest (workspaces)
+npm test        # Vitest (workspaces, inclui captura ponta a ponta em @mavi/api)
 npm run typecheck
 npm run dev:web # dashboard sem Docker
-npm run dev:api # API dev (health) sem Docker
+npm run dev:api # API (health + POST /analyze) sem Docker
 ```
 
-O dashboard web (`apps/web`) também sobe com `npm run dev --workspace=@mavi/web`. API, captura e benchmark completos entram nos tickets seguintes.
+O dashboard web (`apps/web`) também sobe com `npm run dev --workspace=@mavi/web`. Benchmark e camadas de análise entram nos tickets seguintes.

@@ -30,6 +30,9 @@ services:
     environment:
       PORT: "3000"
       DATABASE_PATH: /app/data/mavi.db
+      DATA_DIR: /app/data
+      SCREENSHOT_DIR: /app/data/screenshots
+      NODE_OPTIONS: "--experimental-sqlite"
     env_file:
       - path: .env
         required: false

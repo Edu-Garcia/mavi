@@ -1,17 +1,15 @@
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import path from "node:path";
+import { createAnalysisStore } from "./db/analysisStore.ts";
+import { buildApp } from "./server.ts";
 
 const port = Number(process.env.PORT ?? 3000);
+const dataDir = process.env.DATA_DIR ?? path.resolve("data");
+const dbPath = process.env.DATABASE_PATH ?? path.join(dataDir, "mavi.db");
+const screenshotDir =
+  process.env.SCREENSHOT_DIR ?? path.join(dataDir, "screenshots");
 
-const server = createServer((req: IncomingMessage, res: ServerResponse) => {
-  if (req.url === "/health") {
-    res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify({ status: "ok", service: "mavi-api" }));
-    return;
-  }
+const store = await createAnalysisStore(dbPath);
+const app = await buildApp({ store, screenshotDir });
 
-  res.writeHead(404).end();
-});
-
-server.listen(port, "0.0.0.0", () => {
-  console.log(`MAVI API (dev) em http://0.0.0.0:${port}`);
-});
+await app.listen({ port, host: "0.0.0.0" });
+console.log(`MAVI API em http://0.0.0.0:${port}`);

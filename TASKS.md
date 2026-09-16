@@ -2,7 +2,7 @@
 
 Fatias verticais geradas a partir do `PRD.md` via `/to-tickets`. Cada ticket é demonstrável sozinho e cabe numa sessão de `/implement`.
 
-**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **2**.
+**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **3**.
 
 Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quando todos os critérios de aceite estiverem checados.
 
@@ -27,10 +27,10 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 1
 
-- [ ] Captura pós-renderização (HTML + screenshot) de uma URL ou página local
-- [ ] `Page` e `AnalysisRun` persistidos (SQLite)
-- [ ] Erros de navegação (timeout, URL inválida, 4xx/5xx) retornam falha explícita, sem crash
-- [ ] Teste com página HTML local prova a captura ponta a ponta (APIs externas mockadas se necessário)
+- [x] Captura pós-renderização (HTML + screenshot) de uma URL ou página local
+- [x] `Page` e `AnalysisRun` persistidos (SQLite)
+- [x] Erros de navegação (timeout, URL inválida, 4xx/5xx) retornam falha explícita, sem crash
+- [x] Teste com página HTML local prova a captura ponta a ponta (APIs externas mockadas se necessário)
 
 ### 3. Submeter URL e ver o screenshot no dashboard
 
