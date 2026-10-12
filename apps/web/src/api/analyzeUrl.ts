@@ -1,9 +1,15 @@
-import type { AnalysisRun, Page, Violation } from "@mavi/shared";
+import type {
+  AnalysisRun,
+  FixSuggestion,
+  Page,
+  Violation,
+} from "@mavi/shared";
 
 export interface AnalyzeUrlSuccess {
   page: Page;
   analysisRun: AnalysisRun;
   violations: Violation[];
+  fixSuggestions: FixSuggestion[];
   screenshotUrl: string;
 }
 
@@ -50,7 +56,12 @@ export async function analyzeUrl(
   });
 
   const body = (await response.json()) as
-    | { page: Page; analysisRun: AnalysisRun; violations?: Violation[] }
+    | {
+        page: Page;
+        analysisRun: AnalysisRun;
+        violations?: Violation[];
+        fixSuggestions?: FixSuggestion[];
+      }
     | {
         error: {
           reason: string;
@@ -71,6 +82,7 @@ export async function analyzeUrl(
     page: body.page,
     analysisRun: body.analysisRun,
     violations: body.violations ?? [],
+    fixSuggestions: body.fixSuggestions ?? [],
     screenshotUrl: `${apiBaseUrl}/pages/${body.page.id}/screenshot`,
   };
 }

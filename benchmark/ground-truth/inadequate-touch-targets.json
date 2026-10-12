@@ -1,0 +1,8 @@
+{
+  "groundTruthViolations": [
+    {
+      "wcagCriterion": "2.5.5 Target Size",
+      "location": "button.tiny-target"
+    }
+  ]
+}

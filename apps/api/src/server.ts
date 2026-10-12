@@ -1,7 +1,12 @@
 import Fastify, { type FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
+import type { AnalysisLayer } from "@mavi/shared";
 import type { AnalysisStore } from "./db/analysisStore.ts";
-import { registerAnalyzeRoute } from "./routes/analyze.ts";
+import type { FixSuggestionStore } from "./db/fixSuggestionStore.ts";
+import {
+  registerAnalyzeRoute,
+  type GenerateFixesFn,
+} from "./routes/analyze.ts";
 import { registerPageScreenshotRoute } from "./routes/pageScreenshot.ts";
 
 export type {
@@ -17,6 +22,10 @@ export type {
 export interface AppOptions {
   store: AnalysisStore;
   screenshotDir: string;
+  axeLayer?: AnalysisLayer;
+  visionLayer?: AnalysisLayer;
+  generateFixes?: GenerateFixesFn;
+  fixSuggestionStore?: FixSuggestionStore;
 }
 
 export async function buildApp(options: AppOptions): Promise<FastifyInstance> {

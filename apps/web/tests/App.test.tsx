@@ -3,10 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { App } from "../src/App.tsx";
 import type { AnalyzeUrlSuccess } from "../src/api/analyzeUrl.ts";
-import type { AnalysisRun, Page, Violation } from "@mavi/shared";
+import type { AnalysisRun, FixSuggestion, Page, Violation } from "@mavi/shared";
 
 function successResult(
   violations: Violation[] = [],
+  fixSuggestions: FixSuggestion[] = [],
 ): AnalyzeUrlSuccess {
   const page: Page = {
     id: "page-1",
@@ -27,6 +28,7 @@ function successResult(
     page,
     analysisRun,
     violations,
+    fixSuggestions,
     screenshotUrl: "http://api.test/pages/page-1/screenshot",
   };
 }
@@ -116,5 +118,86 @@ describe("App — submissão de URL", () => {
     expect(headingGroup).toHaveTextContent("Ordem de heading incorreta");
     expect(headingGroup).toHaveTextContent("moderate");
     expect(headingGroup).toHaveTextContent("<h3>Pula h2</h3>");
+  });
+
+  it("mostra violação vision no relatório", async () => {
+    const user = userEvent.setup();
+    const analyze = vi.fn(async () =>
+      successResult([
+        {
+          id: "v-vision",
+          analysisRunId: "run-1",
+          wcagCriterion: "1.4.3 Contrast (Minimum)",
+          sourceLayer: "vision",
+          description: "Contraste dinâmico insuficiente",
+          htmlSnippet: ".low-contrast-text",
+          severity: "serious",
+        },
+      ]),
+    );
+
+    render(<App analyze={analyze} />);
+    await user.type(screen.getByLabelText(/url/i), "https://example.com");
+    await user.click(screen.getByRole("button", { name: /analisar/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("region", {
+          name: /critério 1\.4\.3 contrast \(minimum\)/i,
+        }),
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByText("Contraste dinâmico insuficiente")).toBeInTheDocument();
+    expect(screen.getByText(".low-contrast-text")).toBeInTheDocument();
+  });
+
+  it("expande o card e mostra o diff de correção", async () => {
+    const user = userEvent.setup();
+    const analyze = vi.fn(async () =>
+      successResult(
+        [
+          {
+            id: "v1",
+            analysisRunId: "run-1",
+            wcagCriterion: "1.1.1 Non-text Content",
+            sourceLayer: "axe",
+            description: "Imagem sem texto alternativo",
+            htmlSnippet: "<img>",
+            severity: "critical",
+          },
+        ],
+        [
+          {
+            id: "fix-1",
+            violationId: "v1",
+            diffBefore: "<img>",
+            diffAfter: '<img alt="Produto">',
+            explanation: "Adicionar texto alternativo.",
+            generatedAt: new Date("2026-01-01T00:00:02.000Z"),
+          },
+        ],
+      ),
+    );
+
+    render(<App analyze={analyze} />);
+
+    await user.type(screen.getByLabelText(/url/i), "https://example.com");
+    await user.click(screen.getByRole("button", { name: /analisar/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /ver correção/i }),
+      ).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: /ver correção/i }));
+
+    const original = screen.getByRole("region", { name: /código original/i });
+    const corrected = screen.getByRole("region", { name: /código corrigido/i });
+    expect(original).toHaveTextContent("<img>");
+    expect(corrected).toHaveTextContent('<img alt="Produto">');
+    expect(
+      screen.getByText("Adicionar texto alternativo."),
+    ).toBeInTheDocument();
   });
 });

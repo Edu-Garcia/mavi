@@ -68,7 +68,11 @@ export function App({ analyze = defaultAnalyzeUrl }: AppProps) {
             src={view.result.screenshotUrl}
             alt={`Screenshot de ${view.result.page.url}`}
           />
-          <ViolationsReport violations={view.result.violations} />
+          <ViolationsReport
+            violations={view.result.violations}
+            fixSuggestions={view.result.fixSuggestions}
+          />
+
         </section>
       ) : null}
     </main>

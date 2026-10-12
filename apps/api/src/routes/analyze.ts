@@ -1,13 +1,31 @@
 import type { FastifyInstance } from "fastify";
-import type { AnalysisLayer, AnalysisRun, Page, Violation } from "@mavi/shared";
+import type {
+  AnalysisLayer,
+  AnalysisRun,
+  FixSuggestion,
+  Page,
+  Violation,
+} from "@mavi/shared";
 import {
   CaptureError,
   type CaptureFailureReason,
   capturePage,
 } from "../capture/capturePage.ts";
 import type { AnalysisStore } from "../db/analysisStore.ts";
+import type { FixSuggestionStore } from "../db/fixSuggestionStore.ts";
 import { createAxeAnalysisLayer } from "../analysis/axe/axeAnalysisLayer.ts";
 import { axeCoreVersion } from "../analysis/axe/axeCoreVersion.ts";
+import { createVisionAnalysisLayer } from "../analysis/vision/index.ts";
+import {
+  createGeminiClient,
+  geminiModelVersion,
+} from "../clients/gemini.ts";
+import {
+  createGroqClient,
+  LLAMA_3_3_70B_MODEL,
+  type GroqClient,
+} from "../clients/groq.ts";
+import { generateFixSuggestions } from "../fix-generation/index.ts";
 
 interface AnalyzeBody {
   url?: string;
@@ -17,6 +35,7 @@ interface AnalyzeSuccess {
   page: Page;
   analysisRun: AnalysisRun;
   violations: Violation[];
+  fixSuggestions: FixSuggestion[];
 }
 
 interface AnalyzeFailure {
@@ -26,6 +45,11 @@ interface AnalyzeFailure {
     statusCode?: number;
   };
 }
+
+export type GenerateFixesFn = (
+  violations: Violation[],
+  pageHtml: string,
+) => Promise<FixSuggestion[]>;
 
 function httpStatusForCaptureReason(reason: CaptureFailureReason): number {
   switch (reason) {
@@ -39,15 +63,44 @@ function httpStatusForCaptureReason(reason: CaptureFailureReason): number {
   }
 }
 
+function noopAnalysisLayer(): AnalysisLayer {
+  return { analyze: async () => [] };
+}
+
+function defaultVisionLayer(): AnalysisLayer {
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) {
+    return noopAnalysisLayer();
+  }
+  return createVisionAnalysisLayer({
+    geminiClient: createGeminiClient({ apiKey }),
+  });
+}
+
+function defaultGenerateFixes(): GenerateFixesFn {
+  const apiKey = process.env.GROQ_API_KEY?.trim();
+  if (!apiKey) {
+    return async () => [];
+  }
+  const groqClient: GroqClient = createGroqClient({ apiKey });
+  return (violations, pageHtml) =>
+    generateFixSuggestions(violations, pageHtml, { groqClient });
+}
+
 export function registerAnalyzeRoute(
   app: FastifyInstance,
   options: {
     store: AnalysisStore;
     screenshotDir: string;
     axeLayer?: AnalysisLayer;
+    visionLayer?: AnalysisLayer;
+    generateFixes?: GenerateFixesFn;
+    fixSuggestionStore?: FixSuggestionStore;
   },
 ): void {
   const axeLayer = options.axeLayer ?? createAxeAnalysisLayer();
+  const visionLayer = options.visionLayer ?? defaultVisionLayer();
+  const generateFixes = options.generateFixes ?? defaultGenerateFixes();
 
   app.post<{ Body: AnalyzeBody }>("/analyze", async (request, reply) => {
     const url = request.body?.url?.trim();
@@ -72,17 +125,57 @@ export function registerAnalyzeRoute(
         screenshotPath: capture.screenshotPath,
       });
 
+      const modelVersions: AnalysisRun["modelVersions"] = {
+        axeCore: axeCoreVersion(),
+      };
+      if (process.env.GEMINI_API_KEY?.trim()) {
+        modelVersions.gemini = geminiModelVersion();
+      }
+      if (process.env.GROQ_API_KEY?.trim()) {
+        modelVersions.llama = LLAMA_3_3_70B_MODEL;
+      }
+
       const analysisRun = options.store.saveAnalysisRun({
         pageId: page.id,
         status: "completed",
-        modelVersions: { axeCore: axeCoreVersion() },
+        modelVersions,
       });
 
-      const violations = options.store.saveViolations(
-        await axeLayer.analyze(page, analysisRun),
-      );
+      const axeViolations = await axeLayer.analyze(page, analysisRun);
 
-      const body: AnalyzeSuccess = { page, analysisRun, violations };
+      let visionViolations: Violation[] = [];
+      try {
+        visionViolations = await visionLayer.analyze(page, analysisRun);
+      } catch {
+        // Camada visual opcional: falha de Gemini não invalida o resultado axe.
+        visionViolations = [];
+      }
+
+      const violations = options.store.saveViolations([
+        ...axeViolations,
+        ...visionViolations,
+      ]);
+
+      let fixSuggestions: FixSuggestion[] = [];
+      try {
+        fixSuggestions = await generateFixes(violations, page.capturedHtml);
+      } catch {
+        // Correções opcionais: falha de Groq não invalida violações já detectadas.
+        fixSuggestions = [];
+      }
+
+      if (options.fixSuggestionStore) {
+        for (const suggestion of fixSuggestions) {
+          options.fixSuggestionStore.save(suggestion);
+        }
+      }
+
+      const body: AnalyzeSuccess = {
+        page,
+        analysisRun,
+        violations,
+        fixSuggestions,
+      };
       return reply.status(200).send(body);
     } catch (error) {
       if (error instanceof CaptureError) {

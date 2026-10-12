@@ -3,7 +3,7 @@ import { analyzeUrl } from "../src/api/analyzeUrl.ts";
 import type { AnalysisRun, Page } from "@mavi/shared";
 
 describe("analyzeUrl", () => {
-  it("POST /analyze e devolve page, analysisRun, violations e screenshotUrl", async () => {
+  it("POST /analyze e devolve page, analysisRun, violations, fixSuggestions e screenshotUrl", async () => {
     const page: Page = {
       id: "page-1",
       url: "https://example.com",
@@ -30,11 +30,21 @@ describe("analyzeUrl", () => {
         severity: "critical" as const,
       },
     ];
+    const fixSuggestions = [
+      {
+        id: "fix-1",
+        violationId: "v1",
+        diffBefore: "<img>",
+        diffAfter: '<img alt="x">',
+        explanation: "alt",
+        generatedAt: new Date("2026-01-01T00:00:02.000Z"),
+      },
+    ];
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      json: async () => ({ page, analysisRun, violations }),
+      json: async () => ({ page, analysisRun, violations, fixSuggestions }),
     });
 
     const result = await analyzeUrl("https://example.com", {
@@ -50,6 +60,7 @@ describe("analyzeUrl", () => {
     expect(result.page.id).toBe("page-1");
     expect(result.analysisRun.id).toBe("run-1");
     expect(result.violations).toEqual(violations);
+    expect(result.fixSuggestions).toEqual(fixSuggestions);
     expect(result.screenshotUrl).toBe(
       "http://api.test/pages/page-1/screenshot",
     );

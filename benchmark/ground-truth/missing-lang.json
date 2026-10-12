@@ -1,0 +1,8 @@
+{
+  "groundTruthViolations": [
+    {
+      "wcagCriterion": "3.1.1 Language of Page",
+      "location": "html"
+    }
+  ]
+}

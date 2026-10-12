@@ -1,15 +1,23 @@
-import type { Violation } from "@mavi/shared";
+import type { FixSuggestion, Violation } from "@mavi/shared";
 import { groupViolationsByWcag } from "../report/groupViolationsByWcag.ts";
+import { ViolationCard } from "./ViolationCard.tsx";
 
 export interface ViolationsReportProps {
   violations: Violation[];
+  fixSuggestions?: FixSuggestion[];
 }
 
-export function ViolationsReport({ violations }: ViolationsReportProps) {
+export function ViolationsReport({
+  violations,
+  fixSuggestions = [],
+}: ViolationsReportProps) {
   const groups = groupViolationsByWcag(violations);
+  const fixesByViolationId = new Map(
+    fixSuggestions.map((fix) => [fix.violationId, fix]),
+  );
 
   if (groups.length === 0) {
-    return <p>Nenhuma violação estrutural encontrada.</p>;
+    return <p>Nenhuma violação encontrada.</p>;
   }
 
   return (
@@ -24,13 +32,10 @@ export function ViolationsReport({ violations }: ViolationsReportProps) {
           <ul>
             {group.violations.map((violation) => (
               <li key={violation.id}>
-                <p>{violation.description}</p>
-                <p>
-                  Severidade: <span>{violation.severity}</span>
-                </p>
-                <pre>
-                  <code>{violation.htmlSnippet}</code>
-                </pre>
+                <ViolationCard
+                  violation={violation}
+                  fixSuggestion={fixesByViolationId.get(violation.id)}
+                />
               </li>
             ))}
           </ul>

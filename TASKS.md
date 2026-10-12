@@ -2,7 +2,7 @@
 
 Fatias verticais geradas a partir do `PRD.md` via `/to-tickets`. Cada ticket é demonstrável sozinho e cabe numa sessão de `/implement`.
 
-**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **5** (ou **6** / **8** em paralelo).
+**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **7**.
 
 Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quando todos os critérios de aceite estiverem checados.
 
@@ -60,10 +60,10 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 4
 
-- [ ] Para cada `Violation`, o sistema gera uma `FixSuggestion` via Llama 3.3 70B (Groq)
-- [ ] Prompt de correção versionado (não hardcoded)
-- [ ] Dashboard mostra HTML original e código corrigido lado a lado, com explicação
-- [ ] Testes com Groq mockado validam a estrutura do diff (antes, depois, explicação)
+- [x] Para cada `Violation`, o sistema gera uma `FixSuggestion` via Llama 3.3 70B (Groq)
+- [x] Prompt de correção versionado (não hardcoded)
+- [x] Dashboard mostra HTML original e código corrigido lado a lado, com explicação
+- [x] Testes com Groq mockado validam a estrutura do diff (antes, depois, explicação)
 
 ### 6. Ver violações visuais (Gemini) no relatório
 
@@ -71,10 +71,10 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 4
 
-- [ ] Camada `AnalysisLayer` visual envia o screenshot ao Gemini 2.5 Flash e devolve `Violation[]`
-- [ ] Prompt de visão versionado, saída JSON com critério WCAG, descrição, localização aproximada, severidade
-- [ ] Parse robusto da resposta (fallback se o JSON vier malformado)
-- [ ] Testes com screenshot de contraste insuficiente (Gemini mockado) produzem `Violation` visíveis no relatório
+- [x] Camada `AnalysisLayer` visual envia o screenshot ao Gemini 2.5 Flash e devolve `Violation[]`
+- [x] Prompt de visão versionado, saída JSON com critério WCAG, descrição, localização aproximada, severidade
+- [x] Parse robusto da resposta (fallback se o JSON vier malformado)
+- [x] Testes com screenshot de contraste insuficiente (Gemini mockado) produzem `Violation` visíveis no relatório
 
 ### 7. Relatório único com violações deduplicadas
 
@@ -93,9 +93,9 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 4
 
-- [ ] Páginas de teste cobrindo contraste dinâmico, alvos de toque inadequados, falta de `alt` e ordem de heading
-- [ ] Gabarito por página (critério WCAG + localização) associado a cada `BenchmarkCase`
-- [ ] `BenchmarkCase` persistido a partir do catálogo
+- [x] Páginas de teste cobrindo contraste dinâmico, alvos de toque inadequados, falta de `alt` e ordem de heading
+- [x] Gabarito por página (critério WCAG + localização) associado a cada `BenchmarkCase`
+- [x] `BenchmarkCase` persistido a partir do catálogo
 
 ### 9. Avaliação batch com precisão/recall exportáveis
 

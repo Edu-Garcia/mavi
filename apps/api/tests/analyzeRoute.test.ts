@@ -91,6 +91,7 @@ describe("POST /analyze", () => {
         description: string;
         severity: string;
       }>;
+      fixSuggestions: unknown[];
     };
 
     expect(body.violations.length).toBeGreaterThan(0);
@@ -102,11 +103,91 @@ describe("POST /analyze", () => {
     expect(altViolation?.analysisRunId).toBe(body.analysisRun.id);
     expect(altViolation?.htmlSnippet.toLowerCase()).toContain("<img");
     expect(body.analysisRun.modelVersions.axeCore).toBeTruthy();
+    expect(body.fixSuggestions).toEqual([]);
 
     const persisted = store.listViolationsByAnalysisRun(body.analysisRun.id);
     expect(persisted.some((v) => v.wcagCriterion.startsWith("1.1.1"))).toBe(
       true,
     );
+  });
+
+  it("mantém violações axe quando a camada vision falha", async () => {
+    await app.close();
+    app = await buildApp({
+      store,
+      screenshotDir: path.join(dataDir, "screenshots"),
+      visionLayer: {
+        analyze: async () => {
+          throw new Error("Gemini indisponível");
+        },
+      },
+      generateFixes: async () => {
+        throw new Error("Groq indisponível");
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/analyze",
+      payload: { url: missingAltHtml },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as {
+      violations: Array<{ sourceLayer: string; wcagCriterion: string }>;
+      fixSuggestions: unknown[];
+    };
+    expect(body.violations.some((v) => v.wcagCriterion.startsWith("1.1.1"))).toBe(
+      true,
+    );
+    expect(body.fixSuggestions).toEqual([]);
+  });
+
+  it("combina violações vision e gera fixSuggestions quando injetados", async () => {
+    await app.close();
+    app = await buildApp({
+      store,
+      screenshotDir: path.join(dataDir, "screenshots"),
+      visionLayer: {
+        analyze: async (_page, analysisRun) => [
+          {
+            id: "vision-1",
+            analysisRunId: analysisRun.id,
+            wcagCriterion: "1.4.3 Contrast (Minimum)",
+            sourceLayer: "vision",
+            description: "Contraste insuficiente",
+            htmlSnippet: ".low-contrast",
+            severity: "serious",
+          },
+        ],
+      },
+      generateFixes: async (violations) =>
+        violations.map((v) => ({
+          id: `fix-${v.id}`,
+          violationId: v.id,
+          diffBefore: v.htmlSnippet,
+          diffAfter: `${v.htmlSnippet} <!-- fixed -->`,
+          explanation: "Correção sugerida",
+          generatedAt: new Date("2026-01-01T00:00:00.000Z"),
+        })),
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/analyze",
+      payload: { url: missingAltHtml },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as {
+      violations: Array<{ id: string; sourceLayer: string }>;
+      fixSuggestions: Array<{ violationId: string; explanation: string }>;
+    };
+
+    expect(body.violations.some((v) => v.sourceLayer === "axe")).toBe(true);
+    expect(body.violations.some((v) => v.sourceLayer === "vision")).toBe(true);
+    expect(body.fixSuggestions.length).toBe(body.violations.length);
+    expect(body.fixSuggestions[0]?.explanation).toBe("Correção sugerida");
   });
 
   it("retorna falha explícita sem crash quando a URL é inválida", async () => {

@@ -1,0 +1,8 @@
+{
+  "groundTruthViolations": [
+    {
+      "wcagCriterion": "1.4.3 Contrast (Minimum)",
+      "location": ".low-contrast-text"
+    }
+  ]
+}

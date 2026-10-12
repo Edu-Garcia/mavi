@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Contraste dinâmico</title>
+    <style>
+      body {
+        background: #f0f0f0;
+        font-family: system-ui, sans-serif;
+      }
+      .low-contrast-text {
+        padding: 1rem;
+        font-size: 1.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Oferta</h1>
+    <p class="low-contrast-text" id="dynamic-copy">
+      Texto que recebe cores via JS em runtime.
+    </p>
+    <script>
+      // Contraste aplicado após load — axe no HTML estático sozinho não “vê” o estilo final
+      // da mesma forma que CSS/JS dinâmico em produção.
+      const el = document.getElementById("dynamic-copy");
+      el.style.color = "#c8c8c8";
+      el.style.backgroundColor = "#d0d0d0";
+    </script>
+  </body>
+</html>

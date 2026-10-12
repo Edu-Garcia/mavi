@@ -1,0 +1,8 @@
+{
+  "groundTruthViolations": [
+    {
+      "wcagCriterion": "1.1.1 Non-text Content",
+      "location": "img[src='produto.jpg']"
+    }
+  ]
+}
