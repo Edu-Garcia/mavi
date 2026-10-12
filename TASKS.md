@@ -2,7 +2,7 @@
 
 Fatias verticais geradas a partir do `PRD.md` via `/to-tickets`. Cada ticket é demonstrável sozinho e cabe numa sessão de `/implement`.
 
-**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **4**.
+**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **5** (ou **6** / **8** em paralelo).
 
 Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quando todos os critérios de aceite estiverem checados.
 
@@ -49,10 +49,10 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 3
 
-- [ ] Camada `AnalysisLayer` axe-core gera `Violation[]` a partir do DOM renderizado
-- [ ] Categorias axe mapeadas para critérios WCAG do domínio
-- [ ] Relatório agrupa violações por categoria WCAG e mostra descrição, severidade e snippet
-- [ ] Teste com página contendo `img` sem `alt` (e, se couber, ordem de heading) produz as `Violation` esperadas
+- [x] Camada `AnalysisLayer` axe-core gera `Violation[]` a partir do DOM renderizado
+- [x] Categorias axe mapeadas para critérios WCAG do domínio
+- [x] Relatório agrupa violações por categoria WCAG e mostra descrição, severidade e snippet
+- [x] Teste com página contendo `img` sem `alt` (e, se couber, ordem de heading) produz as `Violation` esperadas
 
 ### 5. Ver um diff de correção por violação
 

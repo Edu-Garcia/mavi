@@ -3,7 +3,7 @@ import { analyzeUrl } from "../src/api/analyzeUrl.ts";
 import type { AnalysisRun, Page } from "@mavi/shared";
 
 describe("analyzeUrl", () => {
-  it("POST /analyze e devolve page, analysisRun e screenshotUrl", async () => {
+  it("POST /analyze e devolve page, analysisRun, violations e screenshotUrl", async () => {
     const page: Page = {
       id: "page-1",
       url: "https://example.com",
@@ -19,11 +19,22 @@ describe("analyzeUrl", () => {
       completedAt: new Date("2026-01-01T00:00:01.000Z"),
       modelVersions: {},
     };
+    const violations = [
+      {
+        id: "v1",
+        analysisRunId: "run-1",
+        wcagCriterion: "1.1.1 Non-text Content",
+        sourceLayer: "axe" as const,
+        description: "Imagem sem alt",
+        htmlSnippet: "<img>",
+        severity: "critical" as const,
+      },
+    ];
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      json: async () => ({ page, analysisRun }),
+      json: async () => ({ page, analysisRun, violations }),
     });
 
     const result = await analyzeUrl("https://example.com", {
@@ -38,6 +49,7 @@ describe("analyzeUrl", () => {
     });
     expect(result.page.id).toBe("page-1");
     expect(result.analysisRun.id).toBe("run-1");
+    expect(result.violations).toEqual(violations);
     expect(result.screenshotUrl).toBe(
       "http://api.test/pages/page-1/screenshot",
     );

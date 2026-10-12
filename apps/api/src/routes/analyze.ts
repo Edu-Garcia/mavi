@@ -1,11 +1,13 @@
 import type { FastifyInstance } from "fastify";
-import type { AnalysisRun, Page } from "@mavi/shared";
+import type { AnalysisLayer, AnalysisRun, Page, Violation } from "@mavi/shared";
 import {
   CaptureError,
   type CaptureFailureReason,
   capturePage,
 } from "../capture/capturePage.ts";
 import type { AnalysisStore } from "../db/analysisStore.ts";
+import { createAxeAnalysisLayer } from "../analysis/axe/axeAnalysisLayer.ts";
+import { axeCoreVersion } from "../analysis/axe/axeCoreVersion.ts";
 
 interface AnalyzeBody {
   url?: string;
@@ -14,6 +16,7 @@ interface AnalyzeBody {
 interface AnalyzeSuccess {
   page: Page;
   analysisRun: AnalysisRun;
+  violations: Violation[];
 }
 
 interface AnalyzeFailure {
@@ -38,8 +41,14 @@ function httpStatusForCaptureReason(reason: CaptureFailureReason): number {
 
 export function registerAnalyzeRoute(
   app: FastifyInstance,
-  options: { store: AnalysisStore; screenshotDir: string },
+  options: {
+    store: AnalysisStore;
+    screenshotDir: string;
+    axeLayer?: AnalysisLayer;
+  },
 ): void {
+  const axeLayer = options.axeLayer ?? createAxeAnalysisLayer();
+
   app.post<{ Body: AnalyzeBody }>("/analyze", async (request, reply) => {
     const url = request.body?.url?.trim();
     if (!url) {
@@ -66,10 +75,14 @@ export function registerAnalyzeRoute(
       const analysisRun = options.store.saveAnalysisRun({
         pageId: page.id,
         status: "completed",
-        modelVersions: {},
+        modelVersions: { axeCore: axeCoreVersion() },
       });
 
-      const body: AnalyzeSuccess = { page, analysisRun };
+      const violations = options.store.saveViolations(
+        await axeLayer.analyze(page, analysisRun),
+      );
+
+      const body: AnalyzeSuccess = { page, analysisRun, violations };
       return reply.status(200).send(body);
     } catch (error) {
       if (error instanceof CaptureError) {

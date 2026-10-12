@@ -14,6 +14,9 @@ import {
 const fixtureHtml = fileURLToPath(
   new URL("./fixtures/sample.html", import.meta.url),
 );
+const missingAltHtml = fileURLToPath(
+  new URL("./fixtures/missing-alt.html", import.meta.url),
+);
 
 describe("POST /analyze", () => {
   let dataDir: string;
@@ -66,6 +69,44 @@ describe("POST /analyze", () => {
     expect(loaded).not.toBeNull();
     expect(loaded?.page.capturedHtml).toContain("Olá MAVI");
     expect(loaded?.analysisRun.status).toBe("completed");
+  });
+
+  it("após captura, devolve violações axe (img sem alt → 1.1.1)", async () => {
+    const response = await app.inject({
+      method: "POST",
+      url: "/analyze",
+      payload: { url: missingAltHtml },
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const body = response.json() as {
+      page: { id: string };
+      analysisRun: { id: string; modelVersions: { axeCore?: string } };
+      violations: Array<{
+        analysisRunId: string;
+        wcagCriterion: string;
+        sourceLayer: string;
+        htmlSnippet: string;
+        description: string;
+        severity: string;
+      }>;
+    };
+
+    expect(body.violations.length).toBeGreaterThan(0);
+    const altViolation = body.violations.find((v) =>
+      v.wcagCriterion.startsWith("1.1.1"),
+    );
+    expect(altViolation).toBeDefined();
+    expect(altViolation?.sourceLayer).toBe("axe");
+    expect(altViolation?.analysisRunId).toBe(body.analysisRun.id);
+    expect(altViolation?.htmlSnippet.toLowerCase()).toContain("<img");
+    expect(body.analysisRun.modelVersions.axeCore).toBeTruthy();
+
+    const persisted = store.listViolationsByAnalysisRun(body.analysisRun.id);
+    expect(persisted.some((v) => v.wcagCriterion.startsWith("1.1.1"))).toBe(
+      true,
+    );
   });
 
   it("retorna falha explícita sem crash quando a URL é inválida", async () => {

@@ -3,6 +3,7 @@ import {
   analyzeUrl as defaultAnalyzeUrl,
   type AnalyzeUrlSuccess,
 } from "./api/analyzeUrl.ts";
+import { ViolationsReport } from "./components/ViolationsReport.tsx";
 
 export type { Page } from "@mavi/shared";
 
@@ -67,6 +68,7 @@ export function App({ analyze = defaultAnalyzeUrl }: AppProps) {
             src={view.result.screenshotUrl}
             alt={`Screenshot de ${view.result.page.url}`}
           />
+          <ViolationsReport violations={view.result.violations} />
         </section>
       ) : null}
     </main>

@@ -7,6 +7,9 @@ import type {
   AnalysisRunStatus,
   ModelVersions,
   Page,
+  SourceLayer,
+  Violation,
+  ViolationSeverity,
 } from "@mavi/shared";
 
 export interface SavePageInput {
@@ -29,6 +32,8 @@ export interface AnalysisRunWithPage {
 export interface AnalysisStore {
   savePage(input: SavePageInput): Page;
   saveAnalysisRun(input: SaveAnalysisRunInput): AnalysisRun;
+  saveViolations(violations: Violation[]): Violation[];
+  listViolationsByAnalysisRun(analysisRunId: string): Violation[];
   getPage(id: string): Page | null;
   getAnalysisRun(id: string): AnalysisRunWithPage | null;
   close(): void;
@@ -49,6 +54,16 @@ interface AnalysisRunRow {
   started_at: string;
   completed_at: string | null;
   model_versions: string;
+}
+
+interface ViolationRow {
+  id: string;
+  analysis_run_id: string;
+  wcag_criterion: string;
+  source_layer: SourceLayer;
+  description: string;
+  html_snippet: string;
+  severity: ViolationSeverity;
 }
 
 function toIsoNow(): string {
@@ -76,6 +91,18 @@ function mapAnalysisRun(row: AnalysisRunRow): AnalysisRun {
   };
 }
 
+function mapViolation(row: ViolationRow): Violation {
+  return {
+    id: row.id,
+    analysisRunId: row.analysis_run_id,
+    wcagCriterion: row.wcag_criterion,
+    sourceLayer: row.source_layer,
+    description: row.description,
+    htmlSnippet: row.html_snippet,
+    severity: row.severity,
+  };
+}
+
 export async function createAnalysisStore(
   dbPath: string,
 ): Promise<AnalysisStore> {
@@ -98,6 +125,16 @@ export async function createAnalysisStore(
       started_at TEXT NOT NULL,
       completed_at TEXT,
       model_versions TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS violations (
+      id TEXT PRIMARY KEY NOT NULL,
+      analysis_run_id TEXT NOT NULL REFERENCES analysis_runs(id),
+      wcag_criterion TEXT NOT NULL,
+      source_layer TEXT NOT NULL,
+      description TEXT NOT NULL,
+      html_snippet TEXT NOT NULL,
+      severity TEXT NOT NULL
     );
   `);
 
@@ -153,6 +190,36 @@ export async function createAnalysisStore(
 
       return analysisRun;
     },
+
+    saveViolations(violations) {
+      const insert = db.prepare(
+        `INSERT INTO violations
+          (id, analysis_run_id, wcag_criterion, source_layer, description, html_snippet, severity)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      );
+
+      for (const violation of violations) {
+        insert.run(
+          violation.id,
+          violation.analysisRunId,
+          violation.wcagCriterion,
+          violation.sourceLayer,
+          violation.description,
+          violation.htmlSnippet,
+          violation.severity,
+        );
+      }
+      return violations;
+    },
+
+
+    listViolationsByAnalysisRun(analysisRunId) {
+      const rows = db
+        .prepare(`SELECT * FROM violations WHERE analysis_run_id = ?`)
+        .all(analysisRunId) as unknown as ViolationRow[];
+      return rows.map(mapViolation);
+    },
+
 
     getPage(id) {
       const pageRow = db
