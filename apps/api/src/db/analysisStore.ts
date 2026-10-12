@@ -29,6 +29,7 @@ export interface AnalysisRunWithPage {
 export interface AnalysisStore {
   savePage(input: SavePageInput): Page;
   saveAnalysisRun(input: SaveAnalysisRunInput): AnalysisRun;
+  getPage(id: string): Page | null;
   getAnalysisRun(id: string): AnalysisRunWithPage | null;
   close(): void;
 }
@@ -151,6 +152,14 @@ export async function createAnalysisStore(
       );
 
       return analysisRun;
+    },
+
+    getPage(id) {
+      const pageRow = db
+        .prepare(`SELECT * FROM pages WHERE id = ?`)
+        .get(id) as PageRow | undefined;
+
+      return pageRow ? mapPage(pageRow) : null;
     },
 
     getAnalysisRun(id) {

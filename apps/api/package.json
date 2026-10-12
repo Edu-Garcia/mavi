@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@fastify/cors": "^11.3.0",
     "@mavi/shared": "*",
     "fastify": "^5.12.1",
     "playwright": "^1.62.1"

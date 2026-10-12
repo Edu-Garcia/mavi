@@ -2,7 +2,7 @@
 
 Fatias verticais geradas a partir do `PRD.md` via `/to-tickets`. Cada ticket é demonstrável sozinho e cabe numa sessão de `/implement`.
 
-**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **3**.
+**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **4**.
 
 Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quando todos os critérios de aceite estiverem checados.
 
@@ -38,10 +38,10 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 2
 
-- [ ] Página de submissão de URL no dashboard
-- [ ] Após a captura, o relatório mostra o screenshot da `Page`
-- [ ] Estado de carregamento visível durante a espera (até ~60s)
-- [ ] Teste de componente ou e2e mínimo da submissão até o screenshot aparecer
+- [x] Página de submissão de URL no dashboard
+- [x] Após a captura, o relatório mostra o screenshot da `Page`
+- [x] Estado de carregamento visível durante a espera (até ~60s)
+- [x] Teste de componente ou e2e mínimo da submissão até o screenshot aparecer
 
 ### 4. Ver violações estruturais (axe-core) no relatório
 

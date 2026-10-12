@@ -34,9 +34,10 @@ npm run docker:up
 
 Endpoints:
 
-- Dashboard: http://localhost:5173
+- Dashboard: http://localhost:5173 — cole uma URL e veja o screenshot capturado
 - API health: http://localhost:3000/health
 - Captura: `POST http://localhost:3000/analyze` com body `{ "url": "<http(s) ou caminho HTML local>" }`
+- Screenshot: `GET http://localhost:3000/pages/:pageId/screenshot`
 
 Parar:
 

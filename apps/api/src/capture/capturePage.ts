@@ -84,7 +84,7 @@ export async function capturePage(
   source: string,
   options: CapturePageOptions,
 ): Promise<CaptureResult> {
-  const timeoutMs = options.timeoutMs ?? 30_000;
+  const timeoutMs = options.timeoutMs ?? 60_000;
   const navigationUrl = resolveNavigationUrl(source);
 
   await mkdir(options.screenshotDir, { recursive: true });
