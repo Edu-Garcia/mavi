@@ -1,11 +1,17 @@
 import { useState } from "react";
-import type { FixSuggestion, Violation } from "@mavi/shared";
+import type { FixSuggestion, SourceLayer, Violation } from "@mavi/shared";
 import { DiffViewer } from "./DiffViewer.tsx";
 
 export interface ViolationCardProps {
   violation: Violation;
   fixSuggestion?: FixSuggestion;
 }
+
+const SOURCE_LAYER_LABEL: Record<SourceLayer, string> = {
+  axe: "axe",
+  vision: "visão",
+  both: "ambas (axe + visão)",
+};
 
 export function ViolationCard({
   violation,
@@ -19,6 +25,7 @@ export function ViolationCard({
       <p>
         Severidade: <span>{violation.severity}</span>
       </p>
+      <p>Origem: {SOURCE_LAYER_LABEL[violation.sourceLayer]}</p>
       <pre>
         <code>{violation.htmlSnippet}</code>
       </pre>

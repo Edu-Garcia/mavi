@@ -15,6 +15,7 @@ import type { AnalysisStore } from "../db/analysisStore.ts";
 import type { FixSuggestionStore } from "../db/fixSuggestionStore.ts";
 import { createAxeAnalysisLayer } from "../analysis/axe/axeAnalysisLayer.ts";
 import { axeCoreVersion } from "../analysis/axe/axeCoreVersion.ts";
+import { mergeViolations } from "../analysis/merge/mergeViolations.ts";
 import { createVisionAnalysisLayer } from "../analysis/vision/index.ts";
 import {
   createGeminiClient,
@@ -151,10 +152,9 @@ export function registerAnalyzeRoute(
         visionViolations = [];
       }
 
-      const violations = options.store.saveViolations([
-        ...axeViolations,
-        ...visionViolations,
-      ]);
+      const violations = options.store.saveViolations(
+        mergeViolations(axeViolations, visionViolations),
+      );
 
       let fixSuggestions: FixSuggestion[] = [];
       try {

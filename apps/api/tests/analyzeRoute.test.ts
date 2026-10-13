@@ -190,6 +190,50 @@ describe("POST /analyze", () => {
     expect(body.fixSuggestions[0]?.explanation).toBe("Correção sugerida");
   });
 
+  it("deduplica violações equivalentes axe+vision como sourceLayer both", async () => {
+    await app.close();
+    app = await buildApp({
+      store,
+      screenshotDir: path.join(dataDir, "screenshots"),
+      visionLayer: {
+        analyze: async (_page, analysisRun) => [
+          {
+            id: "vision-alt",
+            analysisRunId: analysisRun.id,
+            wcagCriterion: "1.1.1 Non-text Content",
+            sourceLayer: "vision",
+            description: "Imagem sem texto alternativo na região do produto",
+            htmlSnippet: "img produto.jpg",
+            severity: "critical",
+          },
+        ],
+      },
+      generateFixes: async () => [],
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/analyze",
+      payload: { url: missingAltHtml },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as {
+      violations: Array<{
+        wcagCriterion: string;
+        sourceLayer: string;
+        htmlSnippet: string;
+      }>;
+    };
+
+    const altViolations = body.violations.filter((v) =>
+      v.wcagCriterion.startsWith("1.1.1"),
+    );
+    expect(altViolations).toHaveLength(1);
+    expect(altViolations[0]?.sourceLayer).toBe("both");
+    expect(altViolations[0]?.htmlSnippet.toLowerCase()).toContain("<img");
+  });
+
   it("retorna falha explícita sem crash quando a URL é inválida", async () => {
     const response = await app.inject({
       method: "POST",

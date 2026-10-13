@@ -33,6 +33,21 @@ describe("ViolationCard", () => {
     expect(screen.getByText(/critical/i)).toBeInTheDocument();
   });
 
+  it.each([
+    ["axe", /origem:\s*axe/i],
+    ["vision", /origem:\s*visão|origem:\s*vision/i],
+    ["both", /origem:\s*ambas|origem:\s*axe\s*\+\s*visão|origem:\s*both/i],
+  ] as const)(
+    "mostra origem da detecção quando sourceLayer é %s",
+    (sourceLayer, label) => {
+      render(
+        <ViolationCard violation={{ ...violation, sourceLayer }} />,
+      );
+
+      expect(screen.getByText(label)).toBeInTheDocument();
+    },
+  );
+
   it("expande e mostra o diff da FixSuggestion", async () => {
     const user = userEvent.setup();
     render(

@@ -2,7 +2,7 @@
 
 Fatias verticais geradas a partir do `PRD.md` via `/to-tickets`. Cada ticket é demonstrável sozinho e cabe numa sessão de `/implement`.
 
-**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **7**.
+**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **9** (também 10, se 5+7).
 
 Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quando todos os critérios de aceite estiverem checados.
 
@@ -82,10 +82,10 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 4, 6
 
-- [ ] `mergeViolations` deduplica por critério WCAG + elemento/região próxima
-- [ ] `sourceLayer` marcado como `axe`, `vision` ou `both`
-- [ ] Relatório e `ViolationCard` mostram a origem da detecção
-- [ ] Testes cobrem: só axe, só visão, e detectada por ambos (uma única `Violation` no caso `both`)
+- [x] `mergeViolations` deduplica por critério WCAG + elemento/região próxima
+- [x] `sourceLayer` marcado como `axe`, `vision` ou `both`
+- [x] Relatório e `ViolationCard` mostram a origem da detecção
+- [x] Testes cobrem: só axe, só visão, e detectada por ambos (uma única `Violation` no caso `both`)
 
 ### 8. Catálogo de benchmark com gabarito WCAG
 
