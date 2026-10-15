@@ -82,7 +82,14 @@ describe("POST /analyze", () => {
 
     const body = response.json() as {
       page: { id: string };
-      analysisRun: { id: string; modelVersions: { axeCore?: string } };
+      analysisRun: {
+        id: string;
+        modelVersions: {
+          axeCore?: string;
+          visionPrompt?: string;
+          fixPrompt?: string;
+        };
+      };
       violations: Array<{
         analysisRunId: string;
         wcagCriterion: string;
@@ -103,6 +110,12 @@ describe("POST /analyze", () => {
     expect(altViolation?.analysisRunId).toBe(body.analysisRun.id);
     expect(altViolation?.htmlSnippet.toLowerCase()).toContain("<img");
     expect(body.analysisRun.modelVersions.axeCore).toBeTruthy();
+    expect(body.analysisRun.modelVersions.visionPrompt).toMatch(
+      /^prompts\/vision-analysis\.md#[a-f0-9]{12}$/,
+    );
+    expect(body.analysisRun.modelVersions.fixPrompt).toMatch(
+      /^prompts\/fix-generation\.md#[a-f0-9]{12}$/,
+    );
     expect(body.fixSuggestions).toEqual([]);
 
     const persisted = store.listViolationsByAnalysisRun(body.analysisRun.id);

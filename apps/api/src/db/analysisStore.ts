@@ -22,6 +22,7 @@ export interface SaveAnalysisRunInput {
   pageId: string;
   status: AnalysisRunStatus;
   modelVersions?: ModelVersions;
+  startedAt?: Date;
 }
 
 export interface AnalysisRunWithPage {
@@ -32,6 +33,7 @@ export interface AnalysisRunWithPage {
 export interface AnalysisStore {
   savePage(input: SavePageInput): Page;
   saveAnalysisRun(input: SaveAnalysisRunInput): AnalysisRun;
+  finishAnalysisRun(id: string, status: "completed" | "failed"): void;
   saveViolations(violations: Violation[]): Violation[];
   listViolationsByAnalysisRun(analysisRunId: string): Violation[];
   getPage(id: string): Page | null;
@@ -64,10 +66,6 @@ interface ViolationRow {
   description: string;
   html_snippet: string;
   severity: ViolationSeverity;
-}
-
-function toIsoNow(): string {
-  return new Date().toISOString();
 }
 
 function mapPage(row: PageRow): Page {
@@ -163,15 +161,17 @@ export async function createAnalysisStore(
     },
 
     saveAnalysisRun(input) {
-      const now = toIsoNow();
+      const startedAt = input.startedAt ?? new Date();
       const completedAt =
-        input.status === "completed" || input.status === "failed" ? now : null;
+        input.status === "completed" || input.status === "failed"
+          ? new Date()
+          : null;
       const analysisRun: AnalysisRun = {
         id: randomUUID(),
         pageId: input.pageId,
         status: input.status,
-        startedAt: new Date(now),
-        completedAt: completedAt ? new Date(completedAt) : null,
+        startedAt,
+        completedAt,
         modelVersions: input.modelVersions ?? {},
       };
 
@@ -189,6 +189,12 @@ export async function createAnalysisStore(
       );
 
       return analysisRun;
+    },
+
+    finishAnalysisRun(id, status) {
+      db.prepare(
+        `UPDATE analysis_runs SET status = ?, completed_at = ? WHERE id = ?`,
+      ).run(status, new Date().toISOString(), id);
     },
 
     saveViolations(violations) {

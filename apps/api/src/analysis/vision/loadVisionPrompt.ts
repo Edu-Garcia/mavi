@@ -5,14 +5,14 @@ import { fileURLToPath } from "node:url";
 /** Caminho versionado relativo à raiz do monorepo (não hardcoded na lógica de análise). */
 export const VISION_PROMPT_RELATIVE_PATH = "prompts/vision-analysis.md";
 
-function defaultPromptPath(): string {
+export function defaultVisionPromptPath(): string {
   // apps/api/src/analysis/vision → raiz do monorepo
   const here = path.dirname(fileURLToPath(import.meta.url));
   return path.resolve(here, "../../../../../", VISION_PROMPT_RELATIVE_PATH);
 }
 
 export async function loadVisionPrompt(
-  promptPath: string = defaultPromptPath(),
+  promptPath: string = defaultVisionPromptPath(),
 ): Promise<string> {
   const content = await readFile(promptPath, "utf8");
   const trimmed = content.trim();

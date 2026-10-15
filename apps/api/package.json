@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./evaluation": "./src/evaluation/index.ts"
+  },
   "scripts": {
     "dev": "node --experimental-strip-types --experimental-sqlite --watch src/dev-server.ts",
     "test": "vitest run",

@@ -7,6 +7,7 @@
     "packages/*"
   ],
   "scripts": {
+    "benchmark": "npm run benchmark --workspace=@mavi/cli",
     "dev:api": "npm run dev --workspace=@mavi/api",
     "dev:web": "npm run dev --workspace=@mavi/web -- --host 0.0.0.0 --port 5173",
     "docker:build": "docker compose build",

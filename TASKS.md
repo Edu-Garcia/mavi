@@ -2,7 +2,7 @@
 
 Fatias verticais geradas a partir do `PRD.md` via `/to-tickets`. Cada ticket é demonstrável sozinho e cabe numa sessão de `/implement`.
 
-**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **9** (também 10, se 5+7).
+**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **10**.
 
 Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quando todos os critérios de aceite estiverem checados.
 
@@ -103,10 +103,10 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 7, 8
 
-- [ ] CLI percorre todas as `BenchmarkCase` sem passar pela UI
-- [ ] Precisão e recall por categoria WCAG, comparando `Violation[]` ao gabarito
-- [ ] `EvaluationResult` persistido por rodada
-- [ ] Export JSON/CSV; cada `AnalysisRun` registra versões de prompts, modelos e timestamp
+- [x] CLI percorre todas as `BenchmarkCase` sem passar pela UI
+- [x] Precisão e recall por categoria WCAG, comparando `Violation[]` ao gabarito
+- [x] `EvaluationResult` persistido por rodada
+- [x] Export JSON/CSV; cada `AnalysisRun` registra versões de prompts, modelos e timestamp
 
 ### 10. README e validação numa página real
 

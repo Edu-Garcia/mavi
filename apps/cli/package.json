@@ -4,12 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "benchmark": "node --experimental-strip-types --experimental-sqlite src/run-benchmark.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@mavi/api": "*",
     "@mavi/shared": "*"
   },
   "devDependencies": {
+    "@types/node": "^22.18.0",
     "typescript": "^5.9.3"
   }
 }

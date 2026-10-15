@@ -18,6 +18,8 @@ export interface ModelVersions {
   gemini?: string;
   llama?: string;
   axeCore?: string;
+  visionPrompt?: string;
+  fixPrompt?: string;
 }
 
 export interface AnalysisRun {

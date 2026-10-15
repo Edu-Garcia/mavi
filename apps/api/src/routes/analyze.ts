@@ -14,18 +14,10 @@ import {
 import type { AnalysisStore } from "../db/analysisStore.ts";
 import type { FixSuggestionStore } from "../db/fixSuggestionStore.ts";
 import { createAxeAnalysisLayer } from "../analysis/axe/axeAnalysisLayer.ts";
-import { axeCoreVersion } from "../analysis/axe/axeCoreVersion.ts";
 import { mergeViolations } from "../analysis/merge/mergeViolations.ts";
-import { createVisionAnalysisLayer } from "../analysis/vision/index.ts";
-import {
-  createGeminiClient,
-  geminiModelVersion,
-} from "../clients/gemini.ts";
-import {
-  createGroqClient,
-  LLAMA_3_3_70B_MODEL,
-  type GroqClient,
-} from "../clients/groq.ts";
+import { createDefaultVisionLayer } from "../analysis/vision/index.ts";
+import { createGroqClient, type GroqClient } from "../clients/groq.ts";
+import { buildModelVersions } from "../evaluation/modelVersions.ts";
 import { generateFixSuggestions } from "../fix-generation/index.ts";
 
 interface AnalyzeBody {
@@ -64,20 +56,6 @@ function httpStatusForCaptureReason(reason: CaptureFailureReason): number {
   }
 }
 
-function noopAnalysisLayer(): AnalysisLayer {
-  return { analyze: async () => [] };
-}
-
-function defaultVisionLayer(): AnalysisLayer {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) {
-    return noopAnalysisLayer();
-  }
-  return createVisionAnalysisLayer({
-    geminiClient: createGeminiClient({ apiKey }),
-  });
-}
-
 function defaultGenerateFixes(): GenerateFixesFn {
   const apiKey = process.env.GROQ_API_KEY?.trim();
   if (!apiKey) {
@@ -100,7 +78,7 @@ export function registerAnalyzeRoute(
   },
 ): void {
   const axeLayer = options.axeLayer ?? createAxeAnalysisLayer();
-  const visionLayer = options.visionLayer ?? defaultVisionLayer();
+  const visionLayer = options.visionLayer ?? createDefaultVisionLayer();
   const generateFixes = options.generateFixes ?? defaultGenerateFixes();
 
   app.post<{ Body: AnalyzeBody }>("/analyze", async (request, reply) => {
@@ -126,20 +104,10 @@ export function registerAnalyzeRoute(
         screenshotPath: capture.screenshotPath,
       });
 
-      const modelVersions: AnalysisRun["modelVersions"] = {
-        axeCore: axeCoreVersion(),
-      };
-      if (process.env.GEMINI_API_KEY?.trim()) {
-        modelVersions.gemini = geminiModelVersion();
-      }
-      if (process.env.GROQ_API_KEY?.trim()) {
-        modelVersions.llama = LLAMA_3_3_70B_MODEL;
-      }
-
       const analysisRun = options.store.saveAnalysisRun({
         pageId: page.id,
         status: "completed",
-        modelVersions,
+        modelVersions: buildModelVersions(),
       });
 
       const axeViolations = await axeLayer.analyze(page, analysisRun);
