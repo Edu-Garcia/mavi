@@ -49,13 +49,21 @@ export async function analyzeUrl(
   const apiBaseUrl = resolveApiBaseUrl(options.apiBaseUrl);
   const fetchFn = options.fetch ?? fetch;
 
-  const response = await fetchFn(`${apiBaseUrl}/analyze`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ url }),
-  });
+  let response: Response;
+  try {
+    response = await fetchFn(`${apiBaseUrl}/analyze`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+  } catch (error) {
+    throw new AnalyzeUrlError({
+      reason: "api_failure",
+      message: error instanceof Error ? error.message : "Falha ao conectar à API",
+    });
+  }
 
-  const body = (await response.json()) as
+  let body:
     | {
         page: Page;
         analysisRun: AnalysisRun;
@@ -70,12 +78,24 @@ export async function analyzeUrl(
         };
       };
 
+  try {
+    body = (await response.json()) as typeof body;
+  } catch (error) {
+    throw new AnalyzeUrlError({
+      reason: "api_failure",
+      message: error instanceof Error ? error.message : "Resposta inválida da API",
+    });
+  }
+
   if (!response.ok || !("page" in body)) {
-    const error =
-      "error" in body
-        ? body.error
-        : { reason: "unknown", message: "Falha ao analisar URL" };
-    throw new AnalyzeUrlError(error);
+    if ("error" in body && body.error.reason) {
+      throw new AnalyzeUrlError(body.error);
+    }
+    throw new AnalyzeUrlError({
+      reason: "api_failure",
+      message: "Falha ao analisar URL",
+      statusCode: response.status,
+    });
   }
 
   return {

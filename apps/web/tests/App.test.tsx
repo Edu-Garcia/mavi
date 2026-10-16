@@ -2,7 +2,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { App } from "../src/App.tsx";
-import type { AnalyzeUrlSuccess } from "../src/api/analyzeUrl.ts";
+import {
+  AnalyzeUrlError,
+  type AnalyzeUrlSuccess,
+} from "../src/api/analyzeUrl.ts";
 import type { AnalysisRun, FixSuggestion, Page, Violation } from "@mavi/shared";
 
 function successResult(
@@ -149,6 +152,27 @@ describe("App — submissão de URL", () => {
     });
     expect(screen.getByText("Contraste dinâmico insuficiente")).toBeInTheDocument();
     expect(screen.getByText(".low-contrast-text")).toBeInTheDocument();
+  });
+
+  it("mostra mensagem amigável quando a análise falha por timeout", async () => {
+    const user = userEvent.setup();
+    const analyze = vi.fn(async () => {
+      throw new AnalyzeUrlError({
+        reason: "timeout",
+        message: "Timeout 60000ms exceeded.",
+      });
+    });
+
+    render(<App analyze={analyze} />);
+    await user.type(screen.getByLabelText(/url/i), "https://example.com");
+    await user.click(screen.getByRole("button", { name: /analisar/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "A página demorou demais para carregar. Tente de novo ou use uma URL mais rápida.",
+      );
+    });
+    expect(screen.queryByText(/Timeout 60000ms/i)).toBeNull();
   });
 
   it("expande o card e mostra o diff de correção", async () => {

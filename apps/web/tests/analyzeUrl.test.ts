@@ -85,4 +85,19 @@ describe("analyzeUrl", () => {
       message: "Campo url é obrigatório",
     });
   });
+
+  it("envolve falha de rede em AnalyzeUrlError com reason api_failure", async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new TypeError("Failed to fetch"));
+
+    await expect(
+      analyzeUrl("https://example.com", {
+        apiBaseUrl: "http://api.test",
+        fetch: fetchMock as unknown as typeof fetch,
+      }),
+    ).rejects.toMatchObject({
+      reason: "api_failure",
+      message: "Failed to fetch",
+    });
+  });
 });
+

@@ -2,7 +2,7 @@
 
 Fatias verticais geradas a partir do `PRD.md` via `/to-tickets`. Cada ticket é demonstrável sozinho e cabe numa sessão de `/implement`.
 
-**Frontier:** qualquer ticket cujo `Blocked by` já está concluído. Próximo: **10**.
+**Frontier:** MVP concluído. Próximo: pós-MVP (fase A), após validação do benchmark.
 
 Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quando todos os critérios de aceite estiverem checados.
 
@@ -114,9 +114,11 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 5, 7
 
-- [ ] README com setup, variáveis de ambiente e como rodar o benchmark
-- [ ] Mensagens de erro amigáveis na UI (timeout, URL inválida, falha de API)
-- [ ] Validação manual do fluxo completo com pelo menos uma página real fora do benchmark
+- [x] README com setup, variáveis de ambiente e como rodar o benchmark
+- [x] Mensagens de erro amigáveis na UI (timeout, URL inválida, falha de API)
+- [x] Validação manual do fluxo completo com pelo menos uma página real fora do benchmark
+
+Validação (2026-10-16): `https://example.com` → screenshot + 9 violações axe no dashboard; domínio inexistente → “Não foi possível abrir a página…”; API parada → “Não foi possível conectar à API do MAVI…”.
 
 ---
 

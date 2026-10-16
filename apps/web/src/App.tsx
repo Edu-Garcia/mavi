@@ -3,6 +3,7 @@ import {
   analyzeUrl as defaultAnalyzeUrl,
   type AnalyzeUrlSuccess,
 } from "./api/analyzeUrl.ts";
+import { formatAnalyzeError } from "./api/formatAnalyzeError.ts";
 import { ViolationsReport } from "./components/ViolationsReport.tsx";
 
 export type { Page } from "@mavi/shared";
@@ -30,9 +31,7 @@ export function App({ analyze = defaultAnalyzeUrl }: AppProps) {
       const result = await analyze(url.trim());
       setView({ status: "ready", result });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Falha ao analisar URL";
-      setView({ status: "error", message });
+      setView({ status: "error", message: formatAnalyzeError(error) });
     }
   }
 
