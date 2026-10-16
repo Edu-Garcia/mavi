@@ -3,7 +3,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FastifyInstance } from "fastify";
 import { buildApp } from "../src/server.ts";
 import {
@@ -245,6 +245,46 @@ describe("POST /analyze", () => {
     expect(altViolations).toHaveLength(1);
     expect(altViolations[0]?.sourceLayer).toBe("both");
     expect(altViolations[0]?.htmlSnippet.toLowerCase()).toContain("<img");
+  });
+
+  it("modo audit devolve violações sem chamar geração de FixSuggestion", async () => {
+    const generateFixes = vi.fn(async () => [
+      {
+        id: "should-not-run",
+        violationId: "x",
+        diffBefore: "<img>",
+        diffAfter: '<img alt="x">',
+        explanation: "não deve aparecer",
+        generatedAt: new Date("2026-01-01T00:00:00.000Z"),
+      },
+    ]);
+
+    await app.close();
+    app = await buildApp({
+      store,
+      screenshotDir: path.join(dataDir, "screenshots"),
+      visionLayer: {
+        analyze: async () => [],
+      },
+      generateFixes,
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/analyze",
+      payload: { url: missingAltHtml, mode: "audit" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as {
+      violations: Array<{ wcagCriterion: string }>;
+      fixSuggestions: unknown[];
+    };
+    expect(body.violations.some((v) => v.wcagCriterion.startsWith("1.1.1"))).toBe(
+      true,
+    );
+    expect(body.fixSuggestions).toEqual([]);
+    expect(generateFixes).not.toHaveBeenCalled();
   });
 
   it("retorna falha explícita sem crash quando a URL é inválida", async () => {

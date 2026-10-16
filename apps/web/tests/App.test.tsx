@@ -55,7 +55,9 @@ describe("App — submissão de URL", () => {
     );
     await user.click(screen.getByRole("button", { name: /analisar/i }));
 
-    expect(analyze).toHaveBeenCalledWith("https://example.com");
+    expect(analyze).toHaveBeenCalledWith("https://example.com", {
+      mode: "fix",
+    });
     expect(screen.getByText(/analisando/i)).toBeInTheDocument();
     expect(screen.queryByRole("img", { name: /screenshot/i })).toBeNull();
 
@@ -152,6 +154,68 @@ describe("App — submissão de URL", () => {
     });
     expect(screen.getByText("Contraste dinâmico insuficiente")).toBeInTheDocument();
     expect(screen.getByText(".low-contrast-text")).toBeInTheDocument();
+  });
+
+  it("em modo auditoria analisa sem correções e permite exportar HTML", async () => {
+    const user = userEvent.setup();
+    const analyze = vi.fn(async () =>
+      successResult([
+        {
+          id: "v1",
+          analysisRunId: "run-1",
+          wcagCriterion: "1.1.1 Non-text Content",
+          sourceLayer: "axe",
+          description: "Imagem sem texto alternativo",
+          htmlSnippet: "<img>",
+          severity: "critical",
+        },
+      ]),
+    );
+    const downloadReport = vi.fn();
+    const fetchScreenshotAsDataUrl = vi.fn(async () => "data:image/png;base64,xx");
+
+    render(
+      <App
+        analyze={analyze}
+        downloadReport={downloadReport}
+        fetchScreenshotAsDataUrl={fetchScreenshotAsDataUrl}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("radio", { name: /auditoria \(sem correções de código\)/i }),
+    );
+    await user.type(screen.getByLabelText(/^url$/i), "https://example.com");
+    await user.click(screen.getByRole("button", { name: /analisar/i }));
+
+    await waitFor(() => {
+      expect(analyze).toHaveBeenCalledWith("https://example.com", {
+        mode: "audit",
+      });
+    });
+    expect(
+      screen.getByText(/relatório de auditoria — sem sugestões de código/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /ver correção/i }),
+    ).toBeNull();
+
+    await user.click(
+      screen.getByRole("button", { name: /exportar relatório html/i }),
+    );
+
+    await waitFor(() => {
+      expect(fetchScreenshotAsDataUrl).toHaveBeenCalledWith(
+        "http://api.test/pages/page-1/screenshot",
+      );
+      expect(downloadReport).toHaveBeenCalledOnce();
+    });
+
+    const [html, filename] = downloadReport.mock.calls[0] as [string, string];
+    expect(filename).toMatch(/^mavi-auditoria-.*\.html$/);
+    expect(html).toContain("https://example.com");
+    expect(html).toContain("Imagem sem texto alternativo");
+    expect(html.toLowerCase()).not.toContain("código corrigido");
   });
 
   it("mostra mensagem amigável quando a análise falha por timeout", async () => {

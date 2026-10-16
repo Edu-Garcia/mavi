@@ -52,11 +52,15 @@ npm run dev:web   # http://localhost:5173
 ```
 
 1. Abra o dashboard em http://localhost:5173
-2. Cole uma URL `http(s)` e clique em **Analisar**
-3. Aguarde “Analisando…” (pode levar até ~60s)
-4. O relatório mostra o screenshot, violações agrupadas por critério WCAG e, ao expandir, o diff de correção
+2. Cole uma URL `http(s)` e escolha o modo:
+   - **Com sugestões de código** — análise + diffs via Groq
+   - **Auditoria (sem correções de código)** — só violações; depois use **Exportar relatório HTML**
+3. Clique em **Analisar** e aguarde “Analisando…” (pode levar até ~60s)
+4. O relatório mostra o screenshot e as violações agrupadas por WCAG; no modo com correção, cada card pode expandir o diff
 
 A API precisa estar no ar; o web usa `VITE_API_URL` (padrão `http://localhost:3000`).
+
+O HTML exportado é autônomo (screenshot embutido). Para PDF: abra o arquivo no navegador e use Imprimir → salvar como PDF.
 
 ### Erros na UI
 
@@ -115,7 +119,7 @@ docker compose down
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | `GET` | `/health` | Health check |
-| `POST` | `/analyze` | Body `{ "url": "<http(s) ou caminho HTML local>" }` → `Page`, `AnalysisRun`, `Violation[]`, `FixSuggestion[]` |
+| `POST` | `/analyze` | Body `{ "url": "...", "mode": "fix" \| "audit" }` → `Page`, `AnalysisRun`, `Violation[]`, `FixSuggestion[]` (`audit` pula Groq) |
 | `GET` | `/pages/:pageId/screenshot` | PNG da `Page` |
 
 Exemplo:

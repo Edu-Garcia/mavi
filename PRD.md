@@ -4,9 +4,9 @@
 
 **Problema:** ferramentas automatizadas de auditoria de acessibilidade web (axe-core, Lighthouse) analisam apenas o DOM estático, sendo incapazes de detectar violações de acessibilidade que só se manifestam após a renderização visual da interface — por exemplo, contrastes insuficientes gerados dinamicamente via CSS/JS, ou alvos de toque com dimensões inadequadas após aplicação de estilos em runtime. No Brasil, menos de 1% dos sites operam em conformidade plena com as diretrizes WCAG, e desenvolvedores carecem de ferramentas que não só detectem, mas também proponham a correção do problema.
 
-**Objetivo:** desenvolver e avaliar um sistema (MAVI) que integra visão computacional multimodal e inteligência artificial generativa para identificar barreiras de acessibilidade em interfaces web — incluindo aquelas que só emergem após a renderização — e propor automaticamente ao desenvolvedor trechos de código corrigidos, em formato de diff antes/depois.
+**Objetivo:** desenvolver e avaliar um sistema (MAVI) que integra visão computacional multimodal e inteligência artificial generativa para identificar barreiras de acessibilidade em interfaces web — incluindo aquelas que só emergem após a renderização — e, quando o usuário for desenvolvedor, propor trechos de código corrigidos em formato de diff antes/depois. O MVP também cobre um caminho de **auditoria sem correção de código**: análise das violações e exportação de um relatório compartilável (HTML) para quem precisa do diagnóstico, não do patch.
 
-**Público-alvo:** desenvolvedores web e equipes de QA que precisam auditar e corrigir problemas de acessibilidade (WCAG) em produtos digitais; secundariamente, a comunidade acadêmica de Interação Humano-Computador e Computação Visual, como contribuição científica avaliável por precisão/recall.
+**Público-alvo:** desenvolvedores web e equipes de QA que precisam auditar e corrigir problemas de acessibilidade (WCAG) em produtos digitais; também gestores, designers e stakeholders não-técnicos que precisam de um documento de análise sem diffs de código; secundariamente, a comunidade acadêmica de Interação Humano-Computador e Computação Visual, como contribuição científica avaliável por precisão/recall.
 
 **Contexto acadêmico:** projeto de Iniciação Científica para o SIC 2026, com prazo de ~3 meses para protótipo funcional completo.
 
@@ -24,10 +24,12 @@
 
 **Geração de correção**
 - Como usuário, quero que, para cada violação detectada, o sistema envie o contexto (trecho HTML + descrição da violação) ao Llama 3.3 70B (via Groq) e receba um diff antes/depois com a correção sugerida.
+- Como usuário não-desenvolvedor (ou quem só precisa do diagnóstico), quero ser capaz de analisar uma URL **sem** gerar sugestões de correção de código, para obter só o inventário de violações.
 
 **Visualização (Web UI)**
-- Como usuário, quero ver um relatório navegável com: screenshot da página, lista de violações agrupadas por categoria WCAG, e o diff de correção para cada uma.
-- Como usuário, quero poder expandir cada violação para ver o trecho de HTML original, a explicação da violação e o código corrigido lado a lado.
+- Como usuário, quero ver um relatório navegável com: screenshot da página, lista de violações agrupadas por categoria WCAG, e o diff de correção para cada uma (quando o modo com correção estiver ativo).
+- Como usuário, quero poder expandir cada violação para ver o trecho de HTML original, a explicação da violação e o código corrigido lado a lado (quando houver `FixSuggestion`).
+- Como usuário, quero exportar a análise como um documento HTML autônomo (imprimível / salvável como PDF pelo navegador), contendo URL, data, screenshot e violações agrupadas por WCAG — sem diffs de código.
 
 **Avaliação (modo batch/CLI)**
 - Como pesquisador, quero rodar o pipeline sobre um conjunto de páginas de benchmark com violações previamente catalogadas.
@@ -42,6 +44,7 @@
 - Suporte a páginas atrás de login/autenticação
 - Parser de HTML estrutural próprio (usa axe-core no MVP; parser customizado fica para fases futuras)
 - Análise de acessibilidade em PDFs, apps mobile nativos ou documentos não-web
+- Geração nativa de PDF no servidor (o MVP exporta HTML; PDF via “Imprimir → salvar como PDF” do navegador é suficiente)
 - Correção automática aplicada diretamente no código-fonte do usuário (o sistema só sugere o diff, não aplica)
 - Suporte a múltiplos idiomas de interface (MVP em português)
 - Fila de processamento assíncrono robusta / múltiplos jobs simultâneos (execução síncrona por requisição é aceitável no MVP)
@@ -154,7 +157,7 @@ Ver arquivo separado `TASKS.md`.
 
 ## 6. Roadmap pós-MVP (fases seguintes)
 
-Sequência de evolução do MAVI **após** o MVP estar construído, testado e validado com as páginas de benchmark iniciais. Ordenada pela regra 80/20: prioriza os itens de maior retorno científico/produto com menor esforço de engenharia, deixando por último o que exige arquitetura nova ou tempo que não cabe no prazo de 3 meses.
+Sequência de evolução do MAVI **após** o MVP completo (incluindo o relatório de auditoria exportável — ticket 11 em `TASKS.md`) estar construído, testado e validado com as páginas de benchmark iniciais. Ordenada pela regra 80/20: prioriza os itens de maior retorno científico/produto com menor esforço de engenharia, deixando por último o que exige arquitetura nova ou tempo que não cabe no prazo de 3 meses.
 
 Cada fase assume que a anterior está concluída e validada — não iniciar uma fase sem antes rodar o benchmark e confirmar que o MVP está estável.
 

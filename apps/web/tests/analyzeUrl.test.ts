@@ -55,7 +55,7 @@ describe("analyzeUrl", () => {
     expect(fetchMock).toHaveBeenCalledWith("http://api.test/analyze", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ url: "https://example.com" }),
+      body: JSON.stringify({ url: "https://example.com", mode: "fix" }),
     });
     expect(result.page.id).toBe("page-1");
     expect(result.analysisRun.id).toBe("run-1");
@@ -83,6 +83,46 @@ describe("analyzeUrl", () => {
     ).rejects.toMatchObject({
       reason: "invalid_url",
       message: "Campo url é obrigatório",
+    });
+  });
+
+  it("envia mode audit no body do POST /analyze", async () => {
+    const page: Page = {
+      id: "page-1",
+      url: "https://example.com",
+      capturedHtml: "<html></html>",
+      screenshotPath: "/data/screenshots/shot.png",
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    };
+    const analysisRun: AnalysisRun = {
+      id: "run-1",
+      pageId: "page-1",
+      status: "completed",
+      startedAt: new Date("2026-01-01T00:00:00.000Z"),
+      completedAt: new Date("2026-01-01T00:00:01.000Z"),
+      modelVersions: {},
+    };
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        page,
+        analysisRun,
+        violations: [],
+        fixSuggestions: [],
+      }),
+    });
+
+    await analyzeUrl("https://example.com", {
+      apiBaseUrl: "http://api.test",
+      fetch: fetchMock as unknown as typeof fetch,
+      mode: "audit",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith("http://api.test/analyze", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ url: "https://example.com", mode: "audit" }),
     });
   });
 

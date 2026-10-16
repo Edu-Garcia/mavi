@@ -20,8 +20,15 @@ import { createGroqClient, type GroqClient } from "../clients/groq.ts";
 import { buildModelVersions } from "../evaluation/modelVersions.ts";
 import { generateFixSuggestions } from "../fix-generation/index.ts";
 
+export type AnalyzeMode = "audit" | "fix";
+
 interface AnalyzeBody {
   url?: string;
+  mode?: AnalyzeMode;
+}
+
+function resolveAnalyzeMode(mode: unknown): AnalyzeMode {
+  return mode === "audit" ? "audit" : "fix";
 }
 
 interface AnalyzeSuccess {
@@ -83,6 +90,7 @@ export function registerAnalyzeRoute(
 
   app.post<{ Body: AnalyzeBody }>("/analyze", async (request, reply) => {
     const url = request.body?.url?.trim();
+    const mode = resolveAnalyzeMode(request.body?.mode);
     if (!url) {
       const body: AnalyzeFailure = {
         error: {
@@ -125,16 +133,18 @@ export function registerAnalyzeRoute(
       );
 
       let fixSuggestions: FixSuggestion[] = [];
-      try {
-        fixSuggestions = await generateFixes(violations, page.capturedHtml);
-      } catch {
-        // Correções opcionais: falha de Groq não invalida violações já detectadas.
-        fixSuggestions = [];
-      }
+      if (mode !== "audit") {
+        try {
+          fixSuggestions = await generateFixes(violations, page.capturedHtml);
+        } catch {
+          // Correções opcionais: falha de Groq não invalida violações já detectadas.
+          fixSuggestions = [];
+        }
 
-      if (options.fixSuggestionStore) {
-        for (const suggestion of fixSuggestions) {
-          options.fixSuggestionStore.save(suggestion);
+        if (options.fixSuggestionStore) {
+          for (const suggestion of fixSuggestions) {
+            options.fixSuggestionStore.save(suggestion);
+          }
         }
       }
 

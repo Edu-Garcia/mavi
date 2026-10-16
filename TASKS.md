@@ -120,11 +120,24 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 Validação (2026-10-16): `https://example.com` → screenshot + 9 violações axe no dashboard; domínio inexistente → “Não foi possível abrir a página…”; API parada → “Não foi possível conectar à API do MAVI…”.
 
+### 11. Relatório de auditoria exportável (sem correção de código)
+
+**O que entrega:** o usuário analisa uma URL em modo auditoria (sem Groq/diffs), vê as violações no dashboard e exporta um HTML autônomo com a análise — adequado para QA, design e gestores, não só desenvolvedores.
+
+**Blocked by:** 10
+
+- [x] Modo de análise sem geração de `FixSuggestion` (pula Groq; captura + axe + visão + merge permanecem)
+- [x] UI permite escolher ou acionar esse modo e deixa claro que não haverá diffs de código
+- [x] Export HTML autônomo com: URL analisada, timestamp, screenshot, violações agrupadas por critério WCAG (descrição, severidade, origem, snippet) — sem diffs
+- [x] Teste cobre geração do HTML a partir de `Violation[]` conhecidas (e ausência de sugestões de correção no modo auditoria)
+
+Decisão de formato: HTML (não PDF no servidor). O usuário pode imprimir/salvar como PDF pelo navegador. Ver `PRD.md` §2.1 e §2.2.
+
 ---
 
 # Pós-MVP (bloqueado)
 
-> Só iniciar depois que o **ticket 9** estiver feito e o benchmark do MVP rodar de ponta a ponta. Racional e priorização: `PRD.md` seção 6.
+> Só iniciar depois que o **ticket 11** estiver feito e o benchmark do MVP rodar de ponta a ponta. Racional e priorização: `PRD.md` seção 6.
 
 Não recortar em fatias de implementação enquanto o MVP não estiver validado.
 

@@ -29,9 +29,12 @@ export class AnalyzeUrlError extends Error {
   }
 }
 
+export type AnalyzeMode = "audit" | "fix";
+
 export interface AnalyzeUrlOptions {
   apiBaseUrl?: string;
   fetch?: typeof fetch;
+  mode?: AnalyzeMode;
 }
 
 function resolveApiBaseUrl(apiBaseUrl?: string): string {
@@ -49,12 +52,14 @@ export async function analyzeUrl(
   const apiBaseUrl = resolveApiBaseUrl(options.apiBaseUrl);
   const fetchFn = options.fetch ?? fetch;
 
+  const mode = options.mode === "audit" ? "audit" : "fix";
+
   let response: Response;
   try {
     response = await fetchFn(`${apiBaseUrl}/analyze`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, mode }),
     });
   } catch (error) {
     throw new AnalyzeUrlError({
