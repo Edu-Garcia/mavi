@@ -2,10 +2,12 @@ node_modules/
 dist/
 build/
 coverage/
-data/
+/data/
 .env
 *.local
 *.db
 *.db-journal
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
