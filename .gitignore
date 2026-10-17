@@ -3,6 +3,7 @@ dist/
 build/
 coverage/
 /data/
+apps/api/data/
 .env
 *.local
 *.db
