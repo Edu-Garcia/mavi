@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Validação MAVI — Somente erros estruturais</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #f7f7f5;
+        color: #1a1a1a;
+        line-height: 1.5;
+      }
+      /* Sem <main>: landmark ausente — erro estrutural típico do axe */
+      .wrap {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 0.75rem;
+        color: #1a1a1a;
+      }
+      /* Heading fora de ordem: h1 → h3 (pula h2) */
+      h3 {
+        font-size: 1.2rem;
+        margin: 1.5rem 0 0.5rem;
+        color: #1a1a1a;
+      }
+      p {
+        margin: 0 0 1rem;
+        color: #1a1a1a;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #333;
+        background: #fff;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+      /* Alvos grandes e contraste alto — sem erros visuais intencionais */
+      button,
+      a.button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.65rem 1.1rem;
+        font-size: 1rem;
+        color: #fff;
+        background: #0b5fff;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      a:not(.button):not(.empty-link) {
+        color: #0b5fff;
+        text-decoration: underline;
+      }
+      a.empty-link {
+        display: inline-block;
+        min-width: 44px;
+        min-height: 44px;
+        border: 2px dashed #0b5fff;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Catálogo de produtos</h1>
+      <p>
+        Visualmente legível (contraste e alvos grandes). Os problemas abaixo
+        são <strong>estruturais</strong> no DOM.
+      </p>
+
+      <!-- Imagem sem alt — WCAG 1.1.1 / axe -->
+      <img
+        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23ffffff'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%231a1a1a' font-family='system-ui' font-size='20'%3EFoto%3C/text%3E%3C/svg%3E"
+        width="320"
+        height="180"
+      />
+
+      <!-- Pula nível de heading -->
+      <h3>Especificações</h3>
+      <p>
+        Descrição do item com texto escuro sobre fundo claro (contraste ok).
+      </p>
+
+      <div class="actions">
+        <button type="button">Adicionar ao carrinho</button>
+        <!-- Link sem nome acessível -->
+        <a class="empty-link" href="https://example.com/produto"></a>
+      </div>
+    </div>
+  </body>
+</html>

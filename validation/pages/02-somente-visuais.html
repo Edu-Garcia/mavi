@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Validação MAVI — Somente erros visuais</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #f7f7f5;
+        color: #1a1a1a;
+        line-height: 1.5;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 0.75rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 1.75rem 0 0.5rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+      }
+      /* Contraste baixo sobre fundo “texturizado” — axe costuma falhar ao medir
+         contraste contra background-image; a camada visual deve perceber. */
+      .hero-visual {
+        position: relative;
+        padding: 2rem 1.25rem;
+        border-radius: 4px;
+        background-image: linear-gradient(
+            rgba(200, 200, 200, 0.55),
+            rgba(210, 210, 210, 0.55)
+          ),
+          repeating-linear-gradient(
+            45deg,
+            #cfcfcf 0,
+            #cfcfcf 8px,
+            #d8d8d8 8px,
+            #d8d8d8 16px
+          );
+        margin: 1rem 0 1.5rem;
+      }
+      .hero-visual .low-contrast-on-texture {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: #c5c5c5;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        margin-top: 1.5rem;
+      }
+      /* Alvos de toque pequenos (WCAG 2.5.5 AAA) — fora do conjunto padrão
+         axe AA; a visão deve apontar como inadequados. */
+      .tiny-target {
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        font-size: 9px;
+        line-height: 1;
+        border: 1px solid #333;
+        background: #fff;
+        color: #1a1a1a;
+        cursor: pointer;
+      }
+      a:not(.tiny-link) {
+        color: #0b5fff;
+        text-decoration: underline;
+      }
+      a.tiny-link {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        font-size: 9px;
+        line-height: 16px;
+        text-align: center;
+        color: #0b5fff;
+        border: 1px solid #0b5fff;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Oferta especial</h1>
+      <p>
+        Estrutura semântica correta (idioma, main, headings, imagem com
+        <code>alt</code>). Os problemas abaixo são principalmente
+        <strong>visuais</strong>.
+      </p>
+
+      <section class="hero-visual" aria-label="Destaque da oferta">
+        <p class="low-contrast-on-texture" id="promo-copy">
+          Economia de 40% só hoje — texto pouco legível sobre o fundo.
+        </p>
+      </section>
+
+      <h2>Produto</h2>
+      <p>
+        <img
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23e8eefc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%231a1a1a' font-family='system-ui' font-size='20'%3EProduto%3C/text%3E%3C/svg%3E"
+          alt="Ilustração do produto em promoção"
+          width="320"
+          height="180"
+        />
+      </p>
+      <p>
+        Detalhes na
+        <a href="https://www.w3.org/WAI/standards-guidelines/wcag/"
+          >página da WCAG</a
+        >.
+      </p>
+
+      <div class="actions">
+        <button type="button" class="tiny-target" title="Comprar">+</button>
+        <a class="tiny-link" href="#detalhes" title="Detalhes">i</a>
+      </div>
+
+      <h2 id="detalhes">Detalhes</h2>
+      <p>
+        Botões e links acima acima são deliberadamente pequenos para simular
+        alvos de toque inadequados sem quebrar a árvore estrutural da página.
+      </p>
+    </main>
+  </body>
+</html>

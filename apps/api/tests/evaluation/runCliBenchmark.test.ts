@@ -33,7 +33,7 @@ describe("runCliBenchmark", () => {
       evaluatedAt: new Date("2026-10-12T21:00:00.000Z"),
       modelVersions: {
         axeCore: "4.10.0",
-        gemini: "gemini-2.5-flash",
+        gemini: "gemini-3.8-flash",
         visionPrompt: "prompts/vision-analysis.md#abc123def456",
         fixPrompt: "prompts/fix-generation.md#fff000aaa111",
       },

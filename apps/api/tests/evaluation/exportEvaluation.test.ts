@@ -9,7 +9,7 @@ const report: BenchmarkRunReport = {
   evaluatedAt: "2026-10-12T21:00:00.000Z",
   modelVersions: {
     axeCore: "4.10.0",
-    gemini: "gemini-2.5-flash",
+    gemini: "gemini-3.8-flash",
     llama: "llama-3.3-70b-versatile",
     visionPrompt: "prompts/vision-analysis.md#abc123def456",
     fixPrompt: "prompts/fix-generation.md#fff000aaa111",
@@ -63,7 +63,7 @@ describe("writeEvaluationExport", () => {
     expect(csv).toContain("2026-10-12T21:00:00.000Z");
     expect(csv).toContain("prompts/vision-analysis.md#abc123def456");
     expect(csv).toContain("prompts/fix-generation.md#fff000aaa111");
-    expect(csv).toContain("gemini-2.5-flash");
+    expect(csv).toContain("gemini-3.8-flash");
     expect(csv).toContain("1.1.1");
     expect(csv).toContain("1.4.3");
   });

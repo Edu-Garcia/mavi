@@ -13,7 +13,7 @@ import { runBenchmark } from "../../src/evaluation/runBenchmark.ts";
 
 const modelVersions = {
   axeCore: "4.10.0",
-  gemini: "gemini-2.5-flash",
+  gemini: "gemini-3.8-flash",
   llama: "llama-3.3-70b-versatile",
   visionPrompt: "prompts/vision-analysis.md#abc123def456",
   fixPrompt: "prompts/fix-generation.md#fff000aaa111",

@@ -3,7 +3,7 @@
  * Usa `GEMINI_API_KEY` — ver `.env.example`. Não logar a chave.
  */
 
-export const GEMINI_MODEL_ID = "gemini-2.5-flash";
+export const GEMINI_MODEL_ID = "gemini-3.8-flash";
 
 export interface GeminiAnalyzeScreenshotInput {
   prompt: string;

@@ -19,7 +19,7 @@
 **Captura e análise**
 - Como usuário, quero submeter uma URL para que o sistema capture o HTML renderizado e um screenshot da página.
 - Como usuário, quero que o sistema rode o axe-core sobre o DOM renderizado para detectar violações estruturais conhecidas.
-- Como usuário, quero que o sistema envie o screenshot ao Gemini 2.5 Flash com um prompt estruturado, para detectar violações visuais que o axe-core não capta (ex: contraste dinâmico, alvos de toque).
+- Como usuário, quero que o sistema envie o screenshot ao Gemini 3.8 Flash com um prompt estruturado, para detectar violações visuais que o axe-core não capta (ex: contraste dinâmico, alvos de toque).
 - Como usuário, quero que os resultados do axe-core e da análise visual sejam cruzados e deduplicados em um único relatório de violações.
 
 **Geração de correção**
@@ -50,7 +50,7 @@
 - Fila de processamento assíncrono robusta / múltiplos jobs simultâneos (execução síncrona por requisição é aceitável no MVP)
 
 ### 2.3 Requisitos não-funcionais
-- **Custo zero de infraestrutura de IA:** uso exclusivo das camadas gratuitas do Gemini 2.5 Flash e do Groq (Llama 3.3 70B).
+- **Custo zero de infraestrutura de IA:** uso exclusivo das camadas gratuitas do Gemini 3.8 Flash e do Groq (Llama 3.3 70B).
 - **Sem dependência de GPU local:** toda inferência de IA é via API externa.
 - **Reprodutibilidade científica:** o modo de avaliação batch deve ser determinístico o suficiente para permitir reexecução e comparação de resultados (registrar versão dos prompts, modelos e timestamp de cada rodada).
 - **Tempo de resposta:** análise de uma única página (captura + axe-core + Gemini + Groq) deve completar em até ~30-60s, dado que depende de APIs externas.
@@ -64,7 +64,7 @@
 - **Linguagem/runtime:** Node.js + TypeScript (ponta a ponta — evita ponte entre linguagens para injeção do axe-core)
 - **Automação web:** Playwright (auto-wait robusto, captura fiel de estado pós-renderização, integração nativa via `@axe-core/playwright`)
 - **Parser estrutural:** axe-core (via injeção no Playwright)
-- **Visão computacional:** Gemini 2.5 Flash (API gratuita, chamada via `@google/generative-ai` ou REST)
+- **Visão computacional:** Gemini 3.8 Flash (API gratuita, chamada via `@google/generative-ai` ou REST)
 - **Geração de código corrigido:** Llama 3.3 70B via Groq API (REST, SDK `groq-sdk`)
 - **Backend/API:** Fastify (leve, TypeScript-first) ou Express
 - **Frontend (dashboard):** React + Vite + Tailwind
@@ -81,7 +81,7 @@ mavi/
 │   │   │   ├── capture/          # Playwright: screenshot + HTML renderizado
 │   │   │   ├── analysis/
 │   │   │   │   ├── axe/          # Camada estrutural (axe-core)
-│   │   │   │   ├── vision/       # Camada visual (Gemini 2.5 Flash)
+│   │   │   │   ├── vision/       # Camada visual (Gemini 3.8 Flash)
 │   │   │   │   └── merge/        # Cruzamento e deduplicação de violações
 │   │   │   ├── fix-generation/   # Geração de diff via Llama 3.3 70B (Groq)
 │   │   │   ├── evaluation/       # Cálculo de precisão/recall sobre benchmark

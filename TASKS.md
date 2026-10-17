@@ -71,7 +71,7 @@ Convenção: `- [ ]` aberto, `- [x]` feito. Marcar o ticket como feito só quand
 
 **Blocked by:** 4
 
-- [x] Camada `AnalysisLayer` visual envia o screenshot ao Gemini 2.5 Flash e devolve `Violation[]`
+- [x] Camada `AnalysisLayer` visual envia o screenshot ao Gemini 3.8 Flash e devolve `Violation[]`
 - [x] Prompt de visão versionado, saída JSON com critério WCAG, descrição, localização aproximada, severidade
 - [x] Parse robusto da resposta (fallback se o JSON vier malformado)
 - [x] Testes com screenshot de contraste insuficiente (Gemini mockado) produzem `Violation` visíveis no relatório

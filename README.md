@@ -35,7 +35,7 @@ Não commite o arquivo `.env`.
 
 | Variável | Padrão | Uso |
 |----------|--------|-----|
-| `GEMINI_API_KEY` | _(vazio)_ | Gemini 2.5 Flash — violações visuais |
+| `GEMINI_API_KEY` | _(vazio)_ | Gemini 3.8 Flash — violações visuais |
 | `GROQ_API_KEY` | _(vazio)_ | Llama 3.3 70B via Groq — diffs de correção |
 | `PORT` | `3000` | Porta da API |
 | `DATABASE_PATH` | `./data/mavi.db` | SQLite (análises e páginas) |

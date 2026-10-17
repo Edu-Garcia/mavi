@@ -60,7 +60,7 @@ describe("vocabulário de domínio", () => {
       startedAt: new Date("2026-01-15T12:00:00.000Z"),
       completedAt: new Date("2026-01-15T12:00:30.000Z"),
       modelVersions: {
-        gemini: "gemini-2.5-flash",
+        gemini: "gemini-3.8-flash",
         llama: "llama-3.3-70b",
         axeCore: "4.10.0",
       },
