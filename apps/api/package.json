@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./evaluation": "./src/evaluation/index.ts"
+    "./evaluation": "./src/evaluation/index.ts",
+    "./env": "./src/env/loadEnv.ts"
   },
   "scripts": {
-    "dev": "node --experimental-strip-types --experimental-sqlite --watch src/dev-server.ts",
+    "dev": "node --env-file-if-exists=../../.env --experimental-strip-types --experimental-sqlite --watch src/dev-server.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
@@ -15,6 +16,7 @@
     "@axe-core/playwright": "^4.13.0",
     "@fastify/cors": "^11.3.0",
     "@mavi/shared": "*",
+    "axe-core": "^4.13.0",
     "fastify": "^5.12.1",
     "playwright": "^1.62.1"
   },

@@ -32,6 +32,7 @@ services:
       DATABASE_PATH: /app/data/mavi.db
       DATA_DIR: /app/data
       SCREENSHOT_DIR: /app/data/screenshots
+      AXE_HTML_DIR: /app/data/axe-html
       NODE_OPTIONS: "--experimental-sqlite"
     env_file:
       - path: .env

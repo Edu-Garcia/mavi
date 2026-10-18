@@ -1,4 +1,5 @@
 import type { FixSuggestion, Violation } from "@mavi/shared";
+import { groupViolationsByIssue } from "../report/groupViolationsByIssue.ts";
 import { groupViolationsByWcag } from "../report/groupViolationsByWcag.ts";
 import { ViolationCard } from "./ViolationCard.tsx";
 
@@ -17,24 +18,31 @@ export function ViolationsReport({
   );
 
   if (groups.length === 0) {
-    return <p>Nenhuma violação encontrada.</p>;
+    return <p className="text-muted">Nenhuma violação encontrada.</p>;
   }
 
   return (
-    <div>
-      <h2>Violações</h2>
+    <div className="grid min-w-0 gap-6">
+      <h2 className="m-0 font-display text-2xl font-semibold text-primary">
+        Violações
+      </h2>
       {groups.map((group) => (
         <section
           key={group.wcagCriterion}
           aria-label={`Critério ${group.wcagCriterion}`}
+          className="grid min-w-0 gap-3"
         >
-          <h3>{group.wcagCriterion}</h3>
-          <ul>
-            {group.violations.map((violation) => (
-              <li key={violation.id}>
+          <h3 className="m-0 font-display text-lg font-semibold text-primary">
+            {group.wcagCriterion}
+          </h3>
+          <ul className="m-0 grid min-w-0 list-none gap-3 p-0">
+            {groupViolationsByIssue(group.violations).map((issue) => (
+              <li key={issue.key} className="min-w-0">
                 <ViolationCard
-                  violation={violation}
-                  fixSuggestion={fixesByViolationId.get(violation.id)}
+                  occurrences={issue.violations.map((violation) => ({
+                    violation,
+                    fixSuggestion: fixesByViolationId.get(violation.id),
+                  }))}
                 />
               </li>
             ))}

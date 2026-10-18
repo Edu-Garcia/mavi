@@ -1,9 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { FixSuggestion, Violation } from "@mavi/shared";
-import {
-  LLAMA_3_3_70B_MODEL,
-  type GroqClient,
-} from "../clients/groq.ts";
+import { groqChatModel, type GroqClient } from "../clients/groq.ts";
 import { loadFixPrompt } from "./loadFixPrompt.ts";
 
 export interface GenerateFixSuggestionsOptions {
@@ -77,7 +74,7 @@ export async function generateFixSuggestions(
   for (const violation of violations) {
     const prompt = fillPrompt(promptTemplate, violation, pageHtml);
     const result = await options.groqClient.chatCompletion({
-      model: LLAMA_3_3_70B_MODEL,
+      model: groqChatModel(),
       messages: [{ role: "user", content: prompt }],
     });
     const payload = parseFixPayload(result.content);

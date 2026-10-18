@@ -36,10 +36,12 @@ Não commite o arquivo `.env`.
 | Variável | Padrão | Uso |
 |----------|--------|-----|
 | `GEMINI_API_KEY` | _(vazio)_ | Gemini 3.8 Flash — violações visuais |
-| `GROQ_API_KEY` | _(vazio)_ | Llama 3.3 70B via Groq — diffs de correção |
+| `GROQ_API_KEY` | _(vazio)_ | Groq — diffs de correção (modelo padrão `openai/gpt-oss-120b`) |
+| `GROQ_MODEL` | `openai/gpt-oss-120b` | Sobrescreve o modelo de chat da Groq |
 | `PORT` | `3000` | Porta da API |
 | `DATABASE_PATH` | `./data/mavi.db` | SQLite (análises e páginas) |
 | `SCREENSHOT_DIR` | `./data/screenshots` | PNGs capturados |
+| `AXE_HTML_DIR` | `./data/axe-html` | HTML que o axe de fato analisa |
 | `VITE_API_URL` | `http://localhost:3000` | Base URL que o dashboard chama |
 
 ## Rodar em desenvolvimento (host)
@@ -58,7 +60,9 @@ npm run dev:web   # http://localhost:5173
 3. Clique em **Analisar** e aguarde “Analisando…” (pode levar até ~60s)
 4. O relatório mostra o screenshot e as violações agrupadas por WCAG; no modo com correção, cada card pode expandir o diff
 
-A API precisa estar no ar; o web usa `VITE_API_URL` (padrão `http://localhost:3000`).
+A API precisa estar no ar; o web usa `VITE_API_URL` (padrão `http://localhost:3000`). No boot, o terminal da API mostra se `GEMINI_API_KEY` e `GROQ_API_KEY` estão **configurada** ou **ausente**, e cada análise imprime as etapas (`capture`, `axe`, `vision`, `merge`, `groq`).
+
+Rodar no localhost **não impede** capturar URLs públicas (`https://example.com`). O Playwright usa a rede da máquina. Se a API estiver no Docker, `localhost` dentro do container é o próprio container — use `host.docker.internal` só quando a página alvo estiver no host. O caminho mais previsível para as páginas de teste do repo é colar um atalho `http://localhost:3000/fixtures/...` no dashboard.
 
 O HTML exportado é autônomo (screenshot embutido). Para PDF: abra o arquivo no navegador e use Imprimir → salvar como PDF.
 
@@ -119,8 +123,11 @@ docker compose down
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | `GET` | `/health` | Health check |
-| `POST` | `/analyze` | Body `{ "url": "...", "mode": "fix" \| "audit" }` → `Page`, `AnalysisRun`, `Violation[]`, `FixSuggestion[]` (`audit` pula Groq) |
+| `POST` | `/analyze` | Body `{ "url": "...", "mode": "fix" \| "audit" }` → `Page`, `AnalysisRun`, `Violation[]`, `FixSuggestion[]`, `diagnostics` (`audit` pula Groq) |
 | `GET` | `/pages/:pageId/screenshot` | PNG da `Page` |
+| `GET` | `/pages/:pageId/axe-html` | HTML que o axe analisou |
+| `GET` | `/fixtures/validation/:file` | Páginas HTML de validação (dev) |
+| `GET` | `/fixtures/benchmark/:file` | Páginas HTML do benchmark (dev) |
 
 Exemplo:
 

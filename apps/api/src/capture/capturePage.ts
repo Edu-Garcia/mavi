@@ -1,3 +1,4 @@
+import { existsSync, statSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -34,7 +35,10 @@ export interface CaptureResult {
 export interface CapturePageOptions {
   screenshotDir: string;
   timeoutMs?: number;
+  settleMs?: number;
 }
+
+const DEFAULT_SETTLE_MS = process.env.VITEST === "true" ? 0 : 750;
 
 function resolveNavigationUrl(source: string): string {
   const trimmed = source.trim();
@@ -61,10 +65,18 @@ function resolveNavigationUrl(source: string): string {
     return trimmed;
   }
 
-  return pathToFileURL(path.resolve(trimmed)).href;
+  const resolved = path.resolve(trimmed);
+  if (!existsSync(resolved) || !statSync(resolved).isFile()) {
+    throw new CaptureError(
+      "invalid_url",
+      `URL inválida: informe um endereço http(s) completo (ex.: https://exemplo.com) ou um arquivo HTML existente. Recebido: ${source}`,
+    );
+  }
+
+  return pathToFileURL(resolved).href;
 }
 
-function mapNavigationError(error: unknown): CaptureError {
+function mapNavigationError(error: unknown, navigationUrl: string): CaptureError {
   if (error instanceof CaptureError) {
     return error;
   }
@@ -72,11 +84,18 @@ function mapNavigationError(error: unknown): CaptureError {
   if (error instanceof playwrightErrors.TimeoutError) {
     return new CaptureError(
       "timeout",
-      error.message || "Tempo esgotado ao navegar",
+      error.message || `Tempo esgotado ao navegar para ${navigationUrl}`,
     );
   }
 
   const message = error instanceof Error ? error.message : String(error);
+  if (/ERR_NAME_NOT_RESOLVED|ENOTFOUND|getaddrinfo/i.test(message)) {
+    return new CaptureError(
+      "navigation_failed",
+      `Não foi possível resolver o endereço: ${navigationUrl}`,
+    );
+  }
+
   return new CaptureError("navigation_failed", message);
 }
 
@@ -85,6 +104,7 @@ export async function capturePage(
   options: CapturePageOptions,
 ): Promise<CaptureResult> {
   const timeoutMs = options.timeoutMs ?? 60_000;
+  const settleMs = options.settleMs ?? DEFAULT_SETTLE_MS;
   const navigationUrl = resolveNavigationUrl(source);
 
   await mkdir(options.screenshotDir, { recursive: true });
@@ -95,11 +115,14 @@ export async function capturePage(
     let response;
     try {
       response = await page.goto(navigationUrl, {
-        waitUntil: "networkidle",
+        waitUntil: "load",
         timeout: timeoutMs,
       });
+      if (settleMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, settleMs));
+      }
     } catch (error) {
-      throw mapNavigationError(error);
+      throw mapNavigationError(error, navigationUrl);
     }
 
     if (response) {

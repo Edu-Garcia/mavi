@@ -1,7 +1,10 @@
+import { loadEnv } from "@mavi/api/env";
 import {
   formatBenchmarkReport,
   runCliBenchmark,
 } from "@mavi/api/evaluation";
+
+loadEnv();
 
 function readArg(flag: string): string | undefined {
   const index = process.argv.indexOf(flag);

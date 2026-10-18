@@ -20,12 +20,14 @@ Responda **apenas** com JSON válido (sem markdown, sem comentários), neste sch
   "violations": [
     {
       "wcagCriterion": "1.4.3 Contrast",
-      "description": "Descrição clara do problema observado na imagem",
-      "location": "Localização aproximada e/ou seletor CSS estimado (ex: botão .cta no canto inferior direito)",
+      "description": "Descrição clara em português do problema observado na imagem",
+      "location": "Localização aproximada em português e/ou seletor CSS estimado (ex: botão .cta no canto inferior direito)",
       "severity": "critical | serious | moderate | minor"
     }
   ]
 }
 ```
+
+Escreva `description` e `location` em português brasileiro.
 
 Se não houver violações visuais claras, retorne `{ "violations": [] }`.

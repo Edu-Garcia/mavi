@@ -5,20 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Validação MAVI — Controle (sem violações)</title>
     <style>
-      :root {
-        color-scheme: light;
-      }
       body {
         margin: 0;
-        font-family: system-ui, sans-serif;
-        background: #f7f7f5;
-        color: #1a1a1a;
-        line-height: 1.5;
+        font-family: "Source Sans 3", system-ui, sans-serif;
+        background: #f4f1ea;
+        color: #1a1814;
+        line-height: 1.6;
+      }
+      header {
+        background: #0f4c5c;
+        color: #fff;
+        padding: 0.85rem 1.25rem;
+      }
+      header p {
+        margin: 0;
+        font-weight: 600;
       }
       main {
         max-width: 40rem;
         margin: 0 auto;
         padding: 2rem 1.25rem 3rem;
+      }
+      h1,
+      h2 {
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
       }
       h1 {
         font-size: 1.75rem;
@@ -36,7 +46,8 @@
         width: 100%;
         max-width: 20rem;
         height: auto;
-        border: 1px solid #ccc;
+        border: 1px solid #d9d3c7;
+        border-radius: 12px;
         background: #fff;
       }
       .actions {
@@ -55,22 +66,26 @@
         padding: 0.65rem 1.1rem;
         font-size: 1rem;
         color: #fff;
-        background: #0b5fff;
+        background: #0f4c5c;
         border: none;
-        border-radius: 4px;
+        border-radius: 8px;
         text-decoration: none;
         cursor: pointer;
       }
-      button.secondary {
-        background: #1a1a1a;
+      button.secondary,
+      a.button.secondary {
+        background: #1a1814;
       }
       a:not(.button) {
-        color: #0b5fff;
+        color: #0f4c5c;
         text-decoration: underline;
       }
     </style>
   </head>
   <body>
+    <header>
+      <p>Loja Norte</p>
+    </header>
     <main>
       <h1>Página de controle</h1>
       <p>
@@ -81,7 +96,6 @@
 
       <h2>Produto exemplificado</h2>
       <p>
-        <!-- SVG inline com role=img e title — evita dependência de arquivo externo -->
         <img
           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='%23e8eefc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%231a1a1a' font-family='system-ui' font-size='20'%3EProduto%3C/text%3E%3C/svg%3E"
           alt="Ilustração do produto de exemplo"

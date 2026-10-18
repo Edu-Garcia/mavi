@@ -1,8 +1,11 @@
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import type { AnalysisRun, Page } from "@mavi/shared";
 import { createAxeAnalysisLayer } from "../src/analysis/axe/axeAnalysisLayer.ts";
+import { axeAnalyzedHtmlPath } from "../src/analysis/axe/axeHtmlPath.ts";
 
 const missingAltHtmlPath = fileURLToPath(
   new URL("./fixtures/missing-alt.html", import.meta.url),
@@ -44,6 +47,10 @@ describe("AxeAnalysisLayer", () => {
     expect(altViolation?.analysisRunId).toBe("run-1");
     expect(altViolation?.htmlSnippet.toLowerCase()).toContain("<img");
     expect(altViolation?.description.length).toBeGreaterThan(0);
+    expect(altViolation?.description.toLowerCase()).toMatch(
+      /alternativ|alternativa|texto alternativo|imagem/,
+    );
+    expect(altViolation?.description).not.toMatch(/Images must have alternate text/i);
     expect(["critical", "serious", "moderate", "minor"]).toContain(
       altViolation?.severity,
     );
@@ -68,5 +75,31 @@ describe("AxeAnalysisLayer", () => {
     expect(headingViolation).toBeDefined();
     expect(headingViolation?.sourceLayer).toBe("axe");
     expect(headingViolation?.htmlSnippet.toLowerCase()).toMatch(/<h[13]/);
+  });
+
+  it("grava o HTML que o axe analisa quando htmlDir é informado", async () => {
+    const htmlDir = await mkdtemp(path.join(tmpdir(), "mavi-axe-html-"));
+    try {
+      const html = await readFile(missingAltHtmlPath, "utf8");
+      const page: Page = {
+        id: "page-missing-alt",
+        url: "file:///missing-alt.html",
+        capturedHtml: html,
+        screenshotPath: "screenshots/unused.png",
+        createdAt: new Date("2026-01-15T12:00:00.000Z"),
+      };
+
+      const layer = createAxeAnalysisLayer({ htmlDir });
+      await layer.analyze(page, stubRun(page.id));
+
+      const dumped = await readFile(
+        axeAnalyzedHtmlPath(htmlDir, page.id),
+        "utf8",
+      );
+      expect(dumped.toLowerCase()).toContain("<img");
+      expect(dumped).toContain("<html");
+    } finally {
+      await rm(htmlDir, { recursive: true, force: true });
+    }
   });
 });

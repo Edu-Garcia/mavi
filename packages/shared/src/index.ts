@@ -75,3 +75,57 @@ export interface EvaluationResult {
 export interface AnalysisLayer {
   analyze(page: Page, analysisRun: AnalysisRun): Promise<Violation[]>;
 }
+
+export type PipelineStageName =
+  | "start"
+  | "capture"
+  | "axe"
+  | "vision"
+  | "merge"
+  | "groq"
+  | "done";
+
+export type PipelineStageStatus = "ok" | "skipped" | "error";
+
+export interface PipelineStageDiagnostic {
+  name: PipelineStageName;
+  status: PipelineStageStatus;
+  durationMs: number;
+}
+
+export type VisionSkipReason = "missing_key";
+
+export type GroqSkipReason = "missing_key" | "audit_mode";
+
+export interface VisionDiagnostic {
+  attempted: boolean;
+  skippedReason?: VisionSkipReason;
+  error?: string;
+  violationCount: number;
+}
+
+export interface GroqDiagnostic {
+  attempted: boolean;
+  skippedReason?: GroqSkipReason;
+  error?: string;
+  suggestionCount: number;
+}
+
+export interface AnalyzeDiagnostics {
+  stages: PipelineStageDiagnostic[];
+  vision: VisionDiagnostic;
+  groq: GroqDiagnostic;
+  keys: {
+    gemini: boolean;
+    groq: boolean;
+  };
+}
+
+export function emptyAnalyzeDiagnostics(): AnalyzeDiagnostics {
+  return {
+    stages: [],
+    vision: { attempted: false, violationCount: 0 },
+    groq: { attempted: false, suggestionCount: 0 },
+    keys: { gemini: false, groq: false },
+  };
+}

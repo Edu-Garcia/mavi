@@ -14,7 +14,7 @@ import { runBenchmark } from "../../src/evaluation/runBenchmark.ts";
 const modelVersions = {
   axeCore: "4.10.0",
   gemini: "gemini-3.8-flash",
-  llama: "llama-3.3-70b-versatile",
+    llama: "openai/gpt-oss-120b",
   visionPrompt: "prompts/vision-analysis.md#abc123def456",
   fixPrompt: "prompts/fix-generation.md#fff000aaa111",
 };

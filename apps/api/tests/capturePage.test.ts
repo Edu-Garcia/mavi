@@ -34,6 +34,17 @@ describe("capturePage", () => {
     expect(screenshot.byteLength).toBeGreaterThan(0);
   });
 
+  it("falha com reason invalid_url quando o texto não é http(s) nem arquivo existente", async () => {
+    screenshotDir = await mkdtemp(path.join(tmpdir(), "mavi-capture-"));
+
+    await expect(
+      capturePage("example.com", { screenshotDir, settleMs: 0 }),
+    ).rejects.toMatchObject({
+      name: "CaptureError",
+      reason: "invalid_url",
+    } satisfies Partial<CaptureError>);
+  });
+
   it("falha com reason invalid_url para fonte inválida", async () => {
     screenshotDir = await mkdtemp(path.join(tmpdir(), "mavi-capture-"));
 

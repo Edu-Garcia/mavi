@@ -103,7 +103,7 @@ describe("generateFixSuggestions", () => {
 
     expect(groqClient.chatCompletion).toHaveBeenCalledOnce();
     const call = vi.mocked(groqClient.chatCompletion).mock.calls[0]?.[0];
-    expect(call?.model).toBe("llama-3.3-70b-versatile");
+    expect(call?.model).toBe("openai/gpt-oss-120b");
     const userContent = call?.messages.find((m) => m.role === "user")?.content;
     expect(userContent).toContain("FixSuggestion");
     expect(userContent).toContain("diffBefore");

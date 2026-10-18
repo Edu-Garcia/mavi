@@ -25,33 +25,66 @@ const fixSuggestion: FixSuggestion = {
 
 describe("ViolationCard", () => {
   it("mostra descrição e severidade da violação", () => {
-    render(<ViolationCard violation={violation} />);
+    render(<ViolationCard occurrences={[{ violation }]} />);
 
     expect(
       screen.getByText("Imagem sem texto alternativo"),
     ).toBeInTheDocument();
-    expect(screen.getByText(/critical/i)).toBeInTheDocument();
+    expect(screen.getByText(/crítica/i)).toBeInTheDocument();
   });
 
   it.each([
-    ["axe", /origem:\s*axe/i],
-    ["vision", /origem:\s*visão|origem:\s*vision/i],
-    ["both", /origem:\s*ambas|origem:\s*axe\s*\+\s*visão|origem:\s*both/i],
+    ["axe", /origem:\s*estrutural \(axe\)/i],
+    ["vision", /origem:\s*visual \(gemini\)/i],
+    ["both", /origem:\s*ambas/i],
   ] as const)(
     "mostra origem da detecção quando sourceLayer é %s",
     (sourceLayer, label) => {
       render(
-        <ViolationCard violation={{ ...violation, sourceLayer }} />,
+        <ViolationCard
+          occurrences={[{ violation: { ...violation, sourceLayer } }]}
+        />,
       );
 
       expect(screen.getByText(label)).toBeInTheDocument();
     },
   );
 
+  it("lista vários trechos do mesmo erro sem repetir descrição", () => {
+    render(
+      <ViolationCard
+        occurrences={[
+          { violation },
+          {
+            violation: {
+              ...violation,
+              id: "v2",
+              htmlSnippet: '<img src="banner.jpg">',
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getAllByText("Imagem sem texto alternativo"),
+    ).toHaveLength(1);
+    expect(screen.getByText("Local 1")).toBeInTheDocument();
+    expect(screen.getByText("Local 2")).toBeInTheDocument();
+    expect(screen.getByLabelText("Trecho HTML 1")).toHaveTextContent(
+      '<img src="produto.jpg">',
+    );
+    expect(screen.getByLabelText("Trecho HTML 2")).toHaveTextContent(
+      '<img src="banner.jpg">',
+    );
+  });
+
   it("expande e mostra o diff da FixSuggestion", async () => {
     const user = userEvent.setup();
     render(
-      <ViolationCard violation={violation} fixSuggestion={fixSuggestion} />,
+      <ViolationCard
+        occurrences={[{ violation, fixSuggestion }]}
+      />,
     );
 
     expect(
@@ -74,7 +107,7 @@ describe("ViolationCard", () => {
   });
 
   it("sem FixSuggestion não oferece expandir diff", () => {
-    render(<ViolationCard violation={violation} />);
+    render(<ViolationCard occurrences={[{ violation }]} />);
 
     expect(
       screen.queryByRole("button", {

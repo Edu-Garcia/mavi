@@ -64,6 +64,8 @@ describe("analyzeUrl", () => {
     expect(result.screenshotUrl).toBe(
       "http://api.test/pages/page-1/screenshot",
     );
+    expect(result.axeHtmlUrl).toBe("http://api.test/pages/page-1/axe-html");
+    expect(result.diagnostics.vision.attempted).toBe(false);
   });
 
   it("propaga falha explícita da API", async () => {

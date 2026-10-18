@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "benchmark": "node --experimental-strip-types --experimental-sqlite src/run-benchmark.ts",
+    "benchmark": "node --env-file-if-exists=../../.env --experimental-strip-types --experimental-sqlite src/run-benchmark.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

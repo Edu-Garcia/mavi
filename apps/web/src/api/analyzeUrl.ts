@@ -1,9 +1,12 @@
 import type {
   AnalysisRun,
+  AnalyzeDiagnostics,
   FixSuggestion,
   Page,
   Violation,
 } from "@mavi/shared";
+import { emptyAnalyzeDiagnostics } from "@mavi/shared";
+import { resolveApiBaseUrl } from "./apiBaseUrl.ts";
 
 export interface AnalyzeUrlSuccess {
   page: Page;
@@ -11,6 +14,8 @@ export interface AnalyzeUrlSuccess {
   violations: Violation[];
   fixSuggestions: FixSuggestion[];
   screenshotUrl: string;
+  axeHtmlUrl: string;
+  diagnostics: AnalyzeDiagnostics;
 }
 
 export class AnalyzeUrlError extends Error {
@@ -35,14 +40,6 @@ export interface AnalyzeUrlOptions {
   apiBaseUrl?: string;
   fetch?: typeof fetch;
   mode?: AnalyzeMode;
-}
-
-function resolveApiBaseUrl(apiBaseUrl?: string): string {
-  if (apiBaseUrl !== undefined) {
-    return apiBaseUrl.replace(/\/$/, "");
-  }
-  const fromEnv = import.meta.env.VITE_API_URL as string | undefined;
-  return (fromEnv ?? "http://localhost:3000").replace(/\/$/, "");
 }
 
 export async function analyzeUrl(
@@ -74,6 +71,7 @@ export async function analyzeUrl(
         analysisRun: AnalysisRun;
         violations?: Violation[];
         fixSuggestions?: FixSuggestion[];
+        diagnostics?: AnalyzeDiagnostics;
       }
     | {
         error: {
@@ -109,5 +107,7 @@ export async function analyzeUrl(
     violations: body.violations ?? [],
     fixSuggestions: body.fixSuggestions ?? [],
     screenshotUrl: `${apiBaseUrl}/pages/${body.page.id}/screenshot`,
+    axeHtmlUrl: `${apiBaseUrl}/pages/${body.page.id}/axe-html`,
+    diagnostics: body.diagnostics ?? emptyAnalyzeDiagnostics(),
   };
 }

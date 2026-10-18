@@ -7,7 +7,7 @@ import {
   VISION_PROMPT_RELATIVE_PATH,
 } from "../analysis/vision/loadVisionPrompt.ts";
 import { geminiModelVersion } from "../clients/gemini.ts";
-import { LLAMA_3_3_70B_MODEL } from "../clients/groq.ts";
+import { groqChatModel } from "../clients/groq.ts";
 import {
   defaultFixPromptPath,
   FIX_PROMPT_RELATIVE_PATH,
@@ -45,7 +45,7 @@ export function buildModelVersions(
     versions.gemini = geminiModelVersion();
   }
   if (options?.includeLlama !== false && env.GROQ_API_KEY?.trim()) {
-    versions.llama = LLAMA_3_3_70B_MODEL;
+    versions.llama = groqChatModel(env);
   }
 
   return versions;

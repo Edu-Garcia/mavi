@@ -135,6 +135,20 @@ Decisão de formato: HTML (não PDF no servidor). O usuário pode imprimir/salva
 
 ---
 
+## Estabilização e UX
+
+Fatias para tornar o MVP observável, com Gemini/Groq realmente chamados, relatórios em português e UI utilizável.
+
+- [x] T1. Carregar `.env`, logger de pipeline e `diagnostics` na API/UI
+- [x] T2. Gemini chamado de verdade, com timeout e erro visível
+- [x] T3. Captura sem `networkidle`, rota `/fixtures` e atalhos no dashboard
+- [x] T4. Relatórios em português e modos audit/fix distintos
+- [x] T5. Design system + Tailwind no dashboard MAVI
+- [x] T6. Visual das páginas de validação/benchmark sem remover violações
+- [x] T7. Bateria final ponta a ponta dos 5 problemas originais
+
+---
+
 # Pós-MVP (bloqueado)
 
 > Só iniciar depois que o **ticket 11** estiver feito e o benchmark do MVP rodar de ponta a ponta. Racional e priorização: `PRD.md` seção 6.

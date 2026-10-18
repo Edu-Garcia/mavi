@@ -27,8 +27,9 @@ describe("POST /analyze", () => {
     dataDir = await mkdtemp(path.join(tmpdir(), "mavi-api-"));
     const dbPath = path.join(dataDir, "mavi.sqlite");
     const screenshotDir = path.join(dataDir, "screenshots");
+    const axeHtmlDir = path.join(dataDir, "axe-html");
     store = await createAnalysisStore(dbPath);
-    app = await buildApp({ store, screenshotDir });
+    app = await buildApp({ store, screenshotDir, axeHtmlDir });
   });
 
   afterEach(async () => {
@@ -69,6 +70,14 @@ describe("POST /analyze", () => {
     expect(loaded).not.toBeNull();
     expect(loaded?.page.capturedHtml).toContain("Olá MAVI");
     expect(loaded?.analysisRun.status).toBe("completed");
+
+    const axeHtml = await app.inject({
+      method: "GET",
+      url: `/pages/${body.page.id}/axe-html`,
+    });
+    expect(axeHtml.statusCode).toBe(200);
+    expect(axeHtml.headers["content-type"]).toMatch(/text\/html/);
+    expect(axeHtml.body).toContain("Olá MAVI");
   });
 
   it("após captura, devolve violações axe (img sem alt → 1.1.1)", async () => {
@@ -124,7 +133,7 @@ describe("POST /analyze", () => {
     );
   });
 
-  it("mantém violações axe quando a camada vision falha", async () => {
+  it("mantém violações axe quando a camada vision falha e registra diagnostics", async () => {
     await app.close();
     app = await buildApp({
       store,
@@ -149,11 +158,66 @@ describe("POST /analyze", () => {
     const body = response.json() as {
       violations: Array<{ sourceLayer: string; wcagCriterion: string }>;
       fixSuggestions: unknown[];
+      diagnostics: {
+        vision: { attempted: boolean; error?: string; violationCount: number };
+        groq: { attempted: boolean; error?: string };
+        stages: Array<{ name: string; status: string }>;
+      };
     };
     expect(body.violations.some((v) => v.wcagCriterion.startsWith("1.1.1"))).toBe(
       true,
     );
     expect(body.fixSuggestions).toEqual([]);
+    expect(body.diagnostics.vision.attempted).toBe(true);
+    expect(body.diagnostics.vision.error).toMatch(/Gemini indisponível/);
+    expect(body.diagnostics.vision.violationCount).toBe(0);
+    expect(body.diagnostics.groq.attempted).toBe(true);
+    expect(body.diagnostics.groq.error).toMatch(/Groq indisponível/);
+    expect(body.diagnostics.stages.map((stage) => stage.name)).toEqual(
+      expect.arrayContaining([
+        "start",
+        "capture",
+        "axe",
+        "vision",
+        "merge",
+        "groq",
+        "done",
+      ]),
+    );
+  });
+
+  it("sem GEMINI_API_KEY registra skip e não chama a API do Gemini", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    await app.close();
+    app = await buildApp({
+      store,
+      screenshotDir: path.join(dataDir, "screenshots"),
+      env: { GEMINI_API_KEY: "", GROQ_API_KEY: "" },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/analyze",
+      payload: { url: missingAltHtml },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as {
+      diagnostics: {
+        vision: { attempted: boolean; skippedReason?: string };
+        groq: { attempted: boolean; skippedReason?: string };
+        keys: { gemini: boolean; groq: boolean };
+      };
+    };
+    expect(body.diagnostics.vision.attempted).toBe(false);
+    expect(body.diagnostics.vision.skippedReason).toBe("missing_key");
+    expect(body.diagnostics.groq.skippedReason).toBe("missing_key");
+    expect(body.diagnostics.keys).toEqual({ gemini: false, groq: false });
+    const geminiCalls = fetchSpy.mock.calls.filter(([requestUrl]) =>
+      String(requestUrl).includes("generativelanguage.googleapis.com"),
+    );
+    expect(geminiCalls).toHaveLength(0);
+    fetchSpy.mockRestore();
   });
 
   it("combina violações vision e gera fixSuggestions quando injetados", async () => {
@@ -279,12 +343,18 @@ describe("POST /analyze", () => {
     const body = response.json() as {
       violations: Array<{ wcagCriterion: string }>;
       fixSuggestions: unknown[];
+      diagnostics: {
+        groq: { attempted: boolean; skippedReason?: string; suggestionCount: number };
+      };
     };
     expect(body.violations.some((v) => v.wcagCriterion.startsWith("1.1.1"))).toBe(
       true,
     );
     expect(body.fixSuggestions).toEqual([]);
     expect(generateFixes).not.toHaveBeenCalled();
+    expect(body.diagnostics.groq.attempted).toBe(false);
+    expect(body.diagnostics.groq.skippedReason).toBe("audit_mode");
+    expect(body.diagnostics.groq.suggestionCount).toBe(0);
   });
 
   it("retorna falha explícita sem crash quando a URL é inválida", async () => {

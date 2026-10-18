@@ -6,7 +6,13 @@ import {
   AnalyzeUrlError,
   type AnalyzeUrlSuccess,
 } from "../src/api/analyzeUrl.ts";
-import type { AnalysisRun, FixSuggestion, Page, Violation } from "@mavi/shared";
+import {
+  emptyAnalyzeDiagnostics,
+  type AnalysisRun,
+  type FixSuggestion,
+  type Page,
+  type Violation,
+} from "@mavi/shared";
 
 function successResult(
   violations: Violation[] = [],
@@ -33,6 +39,8 @@ function successResult(
     violations,
     fixSuggestions,
     screenshotUrl: "http://api.test/pages/page-1/screenshot",
+    axeHtmlUrl: "http://api.test/pages/page-1/axe-html",
+    diagnostics: emptyAnalyzeDiagnostics(),
   };
 }
 
@@ -114,15 +122,64 @@ describe("App — submissão de URL", () => {
       name: /critério 1\.1\.1 non-text content/i,
     });
     expect(altGroup).toHaveTextContent("Imagem sem texto alternativo");
-    expect(altGroup).toHaveTextContent("critical");
+    expect(altGroup).toHaveTextContent("Crítica");
     expect(altGroup).toHaveTextContent('<img src="produto.jpg">');
 
     const headingGroup = screen.getByRole("region", {
       name: /critério 1\.3\.1 info and relationships/i,
     });
     expect(headingGroup).toHaveTextContent("Ordem de heading incorreta");
-    expect(headingGroup).toHaveTextContent("moderate");
+    expect(headingGroup).toHaveTextContent("Moderada");
     expect(headingGroup).toHaveTextContent("<h3>Pula h2</h3>");
+    expect(
+      screen.getByRole("link", { name: /abrir html analisado pelo axe/i }),
+    ).toHaveAttribute("href", "http://api.test/pages/page-1/axe-html");
+  });
+
+  it("agrupa o mesmo erro estrutural e lista os trechos sem repetir a descrição", async () => {
+    const user = userEvent.setup();
+    const analyze = vi.fn(async () =>
+      successResult([
+        {
+          id: "v1",
+          analysisRunId: "run-1",
+          wcagCriterion: "1.1.1 Non-text Content",
+          sourceLayer: "axe",
+          description: "As imagens devem ter texto alternativo",
+          htmlSnippet: '<img src="produto.jpg">',
+          severity: "critical",
+        },
+        {
+          id: "v2",
+          analysisRunId: "run-1",
+          wcagCriterion: "1.1.1 Non-text Content",
+          sourceLayer: "axe",
+          description: "As imagens devem ter texto alternativo",
+          htmlSnippet: '<img src="banner.jpg">',
+          severity: "critical",
+        },
+      ]),
+    );
+
+    render(<App analyze={analyze} />);
+    await user.type(screen.getByLabelText(/url/i), "https://example.com");
+    await user.click(screen.getByRole("button", { name: /analisar/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("As imagens devem ter texto alternativo"),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getAllByText("As imagens devem ter texto alternativo"),
+    ).toHaveLength(1);
+    expect(screen.getByLabelText("Trecho HTML 1")).toHaveTextContent(
+      '<img src="produto.jpg">',
+    );
+    expect(screen.getByLabelText("Trecho HTML 2")).toHaveTextContent(
+      '<img src="banner.jpg">',
+    );
   });
 
   it("mostra violação vision no relatório", async () => {
@@ -287,5 +344,64 @@ describe("App — submissão de URL", () => {
     expect(
       screen.getByText("Adicionar texto alternativo."),
     ).toBeInTheDocument();
+  });
+
+  it("mostra etapas da análise enquanto carrega", async () => {
+    const user = userEvent.setup();
+    const analyze = vi.fn(() => new Promise<AnalyzeUrlSuccess>(() => {}));
+
+    render(<App analyze={analyze} />);
+    await user.type(screen.getByLabelText(/url/i), "https://example.com");
+    await user.click(screen.getByRole("button", { name: /analisar/i }));
+
+    expect(screen.getByLabelText(/etapas da análise/i)).toHaveTextContent(
+      "Capturar página",
+    );
+    expect(screen.getByLabelText(/etapas da análise/i)).toHaveTextContent(
+      "Análise visual (Gemini)",
+    );
+  });
+
+  it("mostra aviso quando a camada visual não rodou por falta de chave", async () => {
+    const user = userEvent.setup();
+    const analyze = vi.fn(async () => {
+      const result = successResult();
+      result.diagnostics = {
+        ...emptyAnalyzeDiagnostics(),
+        vision: {
+          attempted: false,
+          skippedReason: "missing_key",
+          violationCount: 0,
+        },
+        keys: { gemini: false, groq: false },
+      };
+      return result;
+    });
+
+    render(<App analyze={analyze} />);
+    await user.type(screen.getByLabelText(/url/i), "https://example.com");
+    await user.click(screen.getByRole("button", { name: /analisar/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toHaveTextContent(
+        /GEMINI_API_KEY ausente/i,
+      );
+    });
+    expect(
+      screen.getByRole("region", { name: /o que rodou nesta análise/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("preenche a URL com uma página de teste", async () => {
+    const user = userEvent.setup();
+    render(<App analyze={vi.fn()} apiBaseUrl="http://localhost:3000" />);
+
+    await user.click(
+      screen.getByRole("button", { name: /validação — só visuais/i }),
+    );
+
+    expect(screen.getByLabelText(/^url$/i)).toHaveValue(
+      "http://localhost:3000/fixtures/validation/02-somente-visuais.html",
+    );
   });
 });

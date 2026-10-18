@@ -1,4 +1,12 @@
-export const LLAMA_3_3_70B_MODEL = "llama-3.3-70b-versatile";
+/** Modelo de chat padrão no catálogo gratuito atual da Groq. */
+export const DEFAULT_GROQ_MODEL = "openai/gpt-oss-120b";
+
+export function groqChatModel(env: NodeJS.ProcessEnv = process.env): string {
+  return env.GROQ_MODEL?.trim() || DEFAULT_GROQ_MODEL;
+}
+
+/** @deprecated Use `groqChatModel()` — o Llama 3.3 70B saiu do catálogo gratuito. */
+export const LLAMA_3_3_70B_MODEL = DEFAULT_GROQ_MODEL;
 
 export interface GroqChatMessage {
   role: "system" | "user" | "assistant";

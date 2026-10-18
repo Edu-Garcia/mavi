@@ -1,5 +1,6 @@
 import type { AnalysisLayer } from "@mavi/shared";
 import { createGeminiClient } from "../../clients/gemini.ts";
+import { OptionalLayerSkip } from "../../observability/optionalLayerSkip.ts";
 import { createVisionAnalysisLayer } from "./visionAnalysisLayer.ts";
 
 export function createDefaultVisionLayer(options?: {
@@ -19,7 +20,11 @@ export function createDefaultVisionLayer(options?: {
         },
       };
     }
-    return { analyze: async () => [] };
+    return {
+      analyze: async () => {
+        throw new OptionalLayerSkip("vision", "missing_key");
+      },
+    };
   }
 
   return createVisionAnalysisLayer({
