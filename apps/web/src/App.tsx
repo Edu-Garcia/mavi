@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { FileText, ScanSearch } from "lucide-react";
+import { FileText } from "lucide-react";
 import {
   analyzeUrl as defaultAnalyzeUrl,
   type AnalyzeMode,
@@ -8,6 +8,7 @@ import {
 import { resolveApiBaseUrl } from "./api/apiBaseUrl.ts";
 import { formatAnalyzeError } from "./api/formatAnalyzeError.ts";
 import { DiagnosticsPanel } from "./components/DiagnosticsPanel.tsx";
+import { MAVI_LOGO_LIGHT_SRC, MaviLogo } from "./components/MaviLogo.tsx";
 import { ViolationsReport } from "./components/ViolationsReport.tsx";
 import { testPageShortcuts } from "./fixtures/testPages.ts";
 import { buildAuditReportHtml } from "./report/buildAuditReportHtml.ts";
@@ -66,6 +67,9 @@ export function App({
       const screenshotSrc = await fetchScreenshotAsDataUrl(
         view.result.screenshotUrl,
       );
+      const logoSrc = await fetchScreenshotAsDataUrl(MAVI_LOGO_LIGHT_SRC).catch(
+        () => "",
+      );
       const analyzedAt =
         view.result.analysisRun.completedAt ??
         view.result.analysisRun.startedAt ??
@@ -74,6 +78,7 @@ export function App({
         pageUrl: view.result.page.url,
         analyzedAt,
         screenshotSrc,
+        logoSrc,
         violations: view.result.violations,
       });
       const safeName = view.result.page.url
@@ -89,8 +94,8 @@ export function App({
   return (
     <div className="min-h-screen max-w-full overflow-x-clip bg-bg">
       <header className="bg-primary text-on-navy">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
-          <ScanSearch className="h-6 w-6 text-accent" aria-hidden="true" />
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <MaviLogo size={36} />
           <span className="font-display text-lg font-semibold tracking-tight text-on-navy">
             MAVI
           </span>
@@ -99,12 +104,17 @@ export function App({
 
       <main className="mx-auto grid min-w-0 max-w-6xl gap-8 px-4 py-8 sm:px-6 lg:px-8">
         <section className="grid min-w-0 gap-3">
-          <p className="m-0 text-sm font-semibold uppercase tracking-wide text-accent-dark">
-            Auditoria de acessibilidade
-          </p>
-          <h1 className="m-0 font-display text-4xl font-semibold tracking-tight text-primary">
-            MAVI
-          </h1>
+          <div className="flex items-center gap-4">
+            <MaviLogo size={64} variant="light" />
+            <div className="grid gap-1">
+              <p className="m-0 text-sm font-semibold uppercase tracking-wide text-accent-dark">
+                Auditoria de acessibilidade
+              </p>
+              <h1 className="m-0 font-display text-4xl font-semibold tracking-tight text-primary">
+                MAVI - Modelo de Análise Visual Inclusiva
+              </h1>
+            </div>
+          </div>
           <p className="m-0 max-w-2xl text-muted">
             Analisa uma URL com axe-core e Gemini, cruza as violações WCAG e, no
             modo com correções, sugere diffs de código.

@@ -29,6 +29,7 @@ describe("buildAuditReportHtml", () => {
       pageUrl: "https://example.com/",
       analyzedAt: new Date("2026-10-16T15:00:00.000Z"),
       screenshotSrc: "data:image/png;base64,abc123",
+      logoSrc: "data:image/png;base64,logo",
       violations,
     });
 
@@ -36,6 +37,8 @@ describe("buildAuditReportHtml", () => {
     expect(html).toContain("https://example.com/");
     expect(html).toContain("2026-10-16");
     expect(html).toContain('src="data:image/png;base64,abc123"');
+    expect(html).toContain('src="data:image/png;base64,logo"');
+    expect(html).toContain('class="brand"');
     expect(html).toContain("<h2>Violações estruturais</h2>");
     expect(html).toContain("<h2>Violações visuais</h2>");
     expect(html.indexOf("Violações estruturais")).toBeLessThan(

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none" aria-hidden="true">
+  <!-- Cruzes -->
+  <path
+    d="M128 8v32M128 216v32M8 128h32M216 128h32"
+    stroke="#14213D"
+    stroke-width="3"
+    stroke-linecap="butt"
+  />
+  <path
+    d="M122 40h12M122 216h12M40 122v12M216 122v12"
+    stroke="#14213D"
+    stroke-width="3"
+    stroke-linecap="butt"
+  />
+
+  <!-- Anel externo -->
+  <circle cx="128" cy="128" r="118" stroke="#F08A3C" stroke-width="4.5" />
+
+  <!-- Anel tracejado -->
+  <circle
+    cx="128"
+    cy="128"
+    r="88"
+    stroke="#14213D"
+    stroke-width="3"
+    stroke-dasharray="9 7"
+    stroke-linecap="butt"
+  />
+
+  <!-- Disco laranja -->
+  <circle cx="128" cy="128" r="58" fill="#F08A3C" />
+
+  <!-- Pupila -->
+  <circle cx="128" cy="128" r="28" fill="#14213D" />
+
+  <!-- Brilho -->
+  <circle cx="140" cy="116" r="8" fill="#FFFEFB" />
+</svg>

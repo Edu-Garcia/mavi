@@ -45,6 +45,17 @@ function successResult(
 }
 
 describe("App — submissão de URL", () => {
+  it("mostra a logo do MAVI no cabeçalho e no título", () => {
+    render(<App analyze={vi.fn()} />);
+
+    expect(
+      document.querySelectorAll('img[src="/mavi-logo.svg"]').length,
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      document.querySelectorAll('img[src="/mavi-logo-light.svg"]').length,
+    ).toBeGreaterThanOrEqual(1);
+  });
+
   it("mostra loading e depois o screenshot da Page", async () => {
     const user = userEvent.setup();
     let resolveAnalyze!: (value: AnalyzeUrlSuccess) => void;

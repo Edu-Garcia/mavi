@@ -8,6 +8,7 @@ export interface AuditReportInput {
   pageUrl: string;
   analyzedAt: Date | string;
   screenshotSrc: string;
+  logoSrc?: string;
   violations: Violation[];
 }
 
@@ -116,7 +117,9 @@ ${renderLayerSection(
     body { font-family: "Source Sans 3", system-ui, sans-serif; margin: 2rem; line-height: 1.6; color: #4A5568; background: #F7F5F0; }
     h1, h2, h3 { font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: #14213D; }
     .eyebrow { color: #A8470F; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    img { max-width: 100%; height: auto; border: 1px solid #141413; border-radius: 12px; }
+    .brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .brand img { width: 48px; height: 48px; border: 0; background: transparent; }
+    .screenshot { max-width: 100%; height: auto; border: 1px solid #141413; border-radius: 12px; }
     pre { background: #FFFEFB; padding: 0.75rem; border: 1px solid #141413; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; word-break: break-word; }
     section { margin-top: 1.5rem; }
     .snippets { padding-left: 1.25rem; }
@@ -124,11 +127,16 @@ ${renderLayerSection(
   </style>
 </head>
 <body>
-  <p class="eyebrow">Auditoria</p>
-  <h1>MAVI — Relatório de auditoria</h1>
+  <div class="brand">
+    ${input.logoSrc ? `<img src="${escapeHtml(input.logoSrc)}" alt="">` : ""}
+    <div>
+      <p class="eyebrow">Auditoria</p>
+      <h1>MAVI — Relatório de auditoria</h1>
+    </div>
+  </div>
   <p><strong>URL:</strong> ${escapeHtml(input.pageUrl)}</p>
   <p><strong>Analisado em:</strong> ${escapeHtml(analyzedAt)}</p>
-  <p><img src="${escapeHtml(input.screenshotSrc)}" alt="Screenshot de ${escapeHtml(input.pageUrl)}"></p>
+  <p><img class="screenshot" src="${escapeHtml(input.screenshotSrc)}" alt="Screenshot de ${escapeHtml(input.pageUrl)}"></p>
 ${violationSections}
 </body>
 </html>
