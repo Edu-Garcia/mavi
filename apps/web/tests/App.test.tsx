@@ -132,6 +132,12 @@ describe("App — submissão de URL", () => {
     expect(headingGroup).toHaveTextContent("Moderada");
     expect(headingGroup).toHaveTextContent("<h3>Pula h2</h3>");
     expect(
+      screen.getByRole("region", { name: /violações estruturais/i }),
+    ).toHaveTextContent("Imagem sem texto alternativo");
+    expect(
+      screen.getByRole("region", { name: /violações visuais/i }),
+    ).toHaveTextContent("Nenhuma violação visual encontrada.");
+    expect(
       screen.getByRole("link", { name: /abrir html analisado pelo axe/i }),
     ).toHaveAttribute("href", "http://api.test/pages/page-1/axe-html");
   });
@@ -211,6 +217,13 @@ describe("App — submissão de URL", () => {
     });
     expect(screen.getByText("Contraste dinâmico insuficiente")).toBeInTheDocument();
     expect(screen.getByText(".low-contrast-text")).toBeInTheDocument();
+    const structural = screen.getByRole("region", {
+      name: /violações estruturais/i,
+    });
+    const visual = screen.getByRole("region", { name: /violações visuais/i });
+    expect(structural).toHaveTextContent("Nenhuma violação estrutural encontrada.");
+    expect(visual).toHaveTextContent("Contraste dinâmico insuficiente");
+    expect(visual).not.toHaveTextContent("Nenhuma violação visual encontrada.");
   });
 
   it("em modo auditoria analisa sem correções e permite exportar HTML", async () => {

@@ -36,6 +36,11 @@ describe("buildAuditReportHtml", () => {
     expect(html).toContain("https://example.com/");
     expect(html).toContain("2026-10-16");
     expect(html).toContain('src="data:image/png;base64,abc123"');
+    expect(html).toContain("<h2>Violações estruturais</h2>");
+    expect(html).toContain("<h2>Violações visuais</h2>");
+    expect(html.indexOf("Violações estruturais")).toBeLessThan(
+      html.indexOf("Violações visuais"),
+    );
     expect(html).toContain("1.1.1 Non-text Content");
     expect(html).toContain("Imagem sem texto alternativo");
     expect(html).toContain("Crítica");

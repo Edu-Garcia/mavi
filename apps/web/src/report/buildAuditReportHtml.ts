@@ -2,6 +2,7 @@ import type { Violation } from "@mavi/shared";
 import { SEVERITY_LABEL, SOURCE_LAYER_LABEL } from "../labels/violations.ts";
 import { groupViolationsByIssue } from "./groupViolationsByIssue.ts";
 import { groupViolationsByWcag } from "./groupViolationsByWcag.ts";
+import { splitViolationsBySource } from "./splitViolationsBySource.ts";
 
 export interface AuditReportInput {
   pageUrl: string;
@@ -32,28 +33,35 @@ function sourceLabel(sourceLayer: Violation["sourceLayer"]): string {
   return SOURCE_LAYER_LABEL[sourceLayer];
 }
 
-export function buildAuditReportHtml(input: AuditReportInput): string {
-  const analyzedAt = formatAnalyzedAt(input.analyzedAt);
-  const groups = groupViolationsByWcag(input.violations);
+function renderLayerSection(
+  title: string,
+  emptyLabel: string,
+  violations: Violation[],
+): string {
+  const groups = groupViolationsByWcag(violations);
+  if (groups.length === 0) {
+    return `
+      <section>
+        <h2>${escapeHtml(title)}</h2>
+        <p>${escapeHtml(emptyLabel)}</p>
+      </section>`;
+  }
 
-  const violationSections =
-    groups.length === 0
-      ? "<p>Nenhuma violação encontrada.</p>"
-      : groups
-          .map((group) => {
-            const items = groupViolationsByIssue(group.violations)
-              .map((issue) => {
-                const snippets = issue.violations
-                  .map(
-                    (violation, index) => `
+  const criteria = groups
+    .map((group) => {
+      const items = groupViolationsByIssue(group.violations)
+        .map((issue) => {
+          const snippets = issue.violations
+            .map(
+              (violation, index) => `
           <li>
             ${issue.violations.length > 1 ? `<p class="local">Local ${index + 1}</p>` : ""}
             <pre><code>${escapeHtml(violation.htmlSnippet)}</code></pre>
           </li>`,
-                  )
-                  .join("\n");
+            )
+            .join("\n");
 
-                return `
+          return `
         <li>
           <p>${escapeHtml(issue.description)}</p>
           <p>Severidade: ${escapeHtml(SEVERITY_LABEL[issue.severity])}</p>
@@ -62,18 +70,41 @@ export function buildAuditReportHtml(input: AuditReportInput): string {
 ${snippets}
           </ol>
         </li>`;
-              })
-              .join("\n");
+        })
+        .join("\n");
 
-            return `
-      <section>
-        <h2>${escapeHtml(group.wcagCriterion)}</h2>
-        <ul>
+      return `
+      <h3>${escapeHtml(group.wcagCriterion)}</h3>
+      <ul>
 ${items}
-        </ul>
+      </ul>`;
+    })
+    .join("\n");
+
+  return `
+      <section>
+        <h2>${escapeHtml(title)}</h2>
+${criteria}
       </section>`;
-          })
-          .join("\n");
+}
+
+export function buildAuditReportHtml(input: AuditReportInput): string {
+  const analyzedAt = formatAnalyzedAt(input.analyzedAt);
+  const { structural, visual } = splitViolationsBySource(input.violations);
+
+  const violationSections =
+    input.violations.length === 0
+      ? "<p>Nenhuma violação encontrada.</p>"
+      : `${renderLayerSection(
+          "Violações estruturais",
+          "Nenhuma violação estrutural encontrada.",
+          structural,
+        )}
+${renderLayerSection(
+          "Violações visuais",
+          "Nenhuma violação visual encontrada.",
+          visual,
+        )}`;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -83,7 +114,7 @@ ${items}
   <title>MAVI — Relatório de auditoria</title>
   <style>
     body { font-family: "Source Sans 3", system-ui, sans-serif; margin: 2rem; line-height: 1.6; color: #4A5568; background: #F7F5F0; }
-    h1, h2 { font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: #14213D; }
+    h1, h2, h3 { font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: #14213D; }
     .eyebrow { color: #A8470F; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
     img { max-width: 100%; height: auto; border: 1px solid #141413; border-radius: 12px; }
     pre { background: #FFFEFB; padding: 0.75rem; border: 1px solid #141413; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; word-break: break-word; }
@@ -98,7 +129,6 @@ ${items}
   <p><strong>URL:</strong> ${escapeHtml(input.pageUrl)}</p>
   <p><strong>Analisado em:</strong> ${escapeHtml(analyzedAt)}</p>
   <p><img src="${escapeHtml(input.screenshotSrc)}" alt="Screenshot de ${escapeHtml(input.pageUrl)}"></p>
-  <h2>Violações</h2>
 ${violationSections}
 </body>
 </html>
