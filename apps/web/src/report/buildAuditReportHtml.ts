@@ -93,19 +93,16 @@ export function buildAuditReportHtml(input: AuditReportInput): string {
   const analyzedAt = formatAnalyzedAt(input.analyzedAt);
   const { structural, visual } = splitViolationsBySource(input.violations);
 
-  const violationSections =
-    input.violations.length === 0
-      ? "<p>Nenhuma violação encontrada.</p>"
-      : `${renderLayerSection(
-          "Violações estruturais",
-          "Nenhuma violação estrutural encontrada.",
-          structural,
-        )}
+  const violationSections = `${renderLayerSection(
+    "Violações estruturais",
+    "Nenhuma violação estrutural encontrada.",
+    structural,
+  )}
 ${renderLayerSection(
-          "Violações visuais",
-          "Nenhuma violação visual encontrada.",
-          visual,
-        )}`;
+    "Violações visuais",
+    "Nenhuma violação visual encontrada.",
+    visual,
+  )}`;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">

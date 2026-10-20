@@ -55,7 +55,7 @@ describe("buildModelVersions", () => {
       { includeLlama: false },
     );
 
-    expect(versions.gemini).toBe("gemini-3.8-flash");
+    expect(versions.gemini).toBe("gemini-3.5-flash-lite");
     expect(versions.llama).toBeUndefined();
   });
 });

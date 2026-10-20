@@ -1,4 +1,5 @@
 import type { Violation } from "@mavi/shared";
+import { sameCriterion } from "../wcagCriterion.ts";
 
 const GENERIC_TOKENS = new Set([
   "img",
@@ -60,7 +61,7 @@ export function mergeViolations(
   for (const axe of axeViolations) {
     const matchIndex = unmatchedVision.findIndex(
       (vision) =>
-        vision.wcagCriterion === axe.wcagCriterion &&
+        sameCriterion(vision.wcagCriterion, axe.wcagCriterion) &&
         regionsNear(axe.htmlSnippet, vision.htmlSnippet),
     );
 

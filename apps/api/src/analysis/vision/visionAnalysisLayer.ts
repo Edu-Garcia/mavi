@@ -10,6 +10,7 @@ export interface VisionAnalysisLayerDeps {
   geminiClient: GeminiClient;
   /** Override do path do prompt (testes). Default: prompts/vision-analysis.md */
   promptPath?: string;
+  onRawResponse?: (page: Page, raw: string) => Promise<void> | void;
 }
 
 function mimeTypeForScreenshot(screenshotPath: string): string {
@@ -38,6 +39,7 @@ export function createVisionAnalysisLayer(
         imageBytes,
         mimeType: mimeTypeForScreenshot(page.screenshotPath),
       });
+      await deps.onRawResponse?.(page, raw);
 
       const parsed = parseVisionResponse(raw);
       return parsed.map(

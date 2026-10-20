@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "benchmark": "npm run benchmark --workspace=@mavi/cli",
+    "precision-coverage": "npm run precision-coverage --workspace=@mavi/api --",
     "dev:api": "npm run dev --workspace=@mavi/api",
     "dev:web": "npm run dev --workspace=@mavi/web -- --host 0.0.0.0 --port 5173",
     "docker:build": "docker compose build",

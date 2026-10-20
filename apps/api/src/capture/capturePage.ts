@@ -3,6 +3,7 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium, errors as playwrightErrors } from "playwright";
+import { CAPTURE_VIEWPORT } from "./viewport.ts";
 
 export type CaptureFailureReason =
   | "timeout"
@@ -111,7 +112,7 @@ export async function capturePage(
 
   const browser = await chromium.launch({ headless: true });
   try {
-    const page = await browser.newPage();
+    const page = await browser.newPage({ viewport: CAPTURE_VIEWPORT });
     let response;
     try {
       response = await page.goto(navigationUrl, {

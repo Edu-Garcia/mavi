@@ -113,4 +113,18 @@ describe("buildAuditReportHtml", () => {
     expect(html.toLowerCase()).not.toContain("código corrigido");
     expect(html).not.toContain("fixSuggestion");
   });
+
+  it("sempre emite as duas seções, mesmo sem violações", () => {
+    const html = buildAuditReportHtml({
+      pageUrl: "https://example.com/",
+      analyzedAt: new Date("2026-10-16T15:00:00.000Z"),
+      screenshotSrc: "data:image/png;base64,x",
+      violations: [],
+    });
+
+    expect(html).toContain("<h2>Violações estruturais</h2>");
+    expect(html).toContain("Nenhuma violação estrutural encontrada.");
+    expect(html).toContain("<h2>Violações visuais</h2>");
+    expect(html).toContain("Nenhuma violação visual encontrada.");
+  });
 });

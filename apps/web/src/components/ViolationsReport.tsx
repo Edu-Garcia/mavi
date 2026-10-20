@@ -18,10 +18,6 @@ export function ViolationsReport({
   );
   const { structural, visual } = splitViolationsBySource(violations);
 
-  if (violations.length === 0) {
-    return <p className="text-muted">Nenhuma violação encontrada.</p>;
-  }
-
   return (
     <div className="grid min-w-0 gap-8">
       <h2 className="m-0 font-display text-2xl font-semibold text-primary">

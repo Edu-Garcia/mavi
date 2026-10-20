@@ -84,4 +84,21 @@ describe("mergeViolations", () => {
     expect(merged).toHaveLength(2);
     expect(merged.map((v) => v.sourceLayer).sort()).toEqual(["axe", "vision"]);
   });
+
+  it("funde o mesmo número WCAG mesmo com rótulos diferentes", () => {
+    const axe = axeViolation({
+      id: "axe-contrast",
+      wcagCriterion: "1.4.3 Contrast (Minimum)",
+      htmlSnippet: '<p class="low-contrast-text">x</p>',
+    });
+    const vision = visionViolation({
+      id: "vision-contrast",
+      wcagCriterion: "1.4.3 Contrast",
+      htmlSnippet: "texto low-contrast-text no banner",
+    });
+
+    const merged = mergeViolations([axe], [vision]);
+    expect(merged).toHaveLength(1);
+    expect(merged[0]?.sourceLayer).toBe("both");
+  });
 });

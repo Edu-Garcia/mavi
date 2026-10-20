@@ -12,3 +12,6 @@ apps/api/data/
 Thumbs.db
 __pycache__/
 *.pyc
+
+# Campanhas de precisão/cobertura (screenshots, sqlite, HTML, CSV, resumo)
+resultados/

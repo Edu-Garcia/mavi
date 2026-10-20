@@ -27,7 +27,7 @@ describe("createGeminiClient", () => {
     expect(text).toBe('{"violations":[]}');
     expect(fetchFn).toHaveBeenCalledOnce();
     const [url, init] = fetchFn.mock.calls[0] as [string, RequestInit];
-    expect(url).toContain("/models/gemini-3.8-flash:generateContent");
+    expect(url).toContain("/models/gemini-3.5-flash-lite:generateContent");
     expect(url).not.toContain("test-key-should-not-be-logged");
     const body = JSON.parse(String(init.body));
     expect(body.contents[0].parts[0].text).toBe("analise a imagem");

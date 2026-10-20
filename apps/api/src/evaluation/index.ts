@@ -16,3 +16,6 @@ export {
   type GroundTruthScore,
 } from "./scoreAgainstGroundTruth.ts";
 export { buildModelVersions, promptVersionId } from "./modelVersions.ts";
+export { runPrecisionCoverage } from "./precisionCoverage/runPrecisionCoverage.ts";
+export { scoreByConfiguration } from "./precisionCoverage/scoreByConfiguration.ts";
+export { EXTRA_AXE_RULE_IDS } from "./precisionCoverage/extraRules.ts";

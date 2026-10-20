@@ -12,6 +12,7 @@ import {
 
 export function createAxeAnalysisLayer(options?: {
   htmlDir?: string;
+  onRawResults?: (page: Page, results: unknown) => Promise<void> | void;
 }): AnalysisLayer {
   return {
     async analyze(page: Page, analysisRun: AnalysisRun): Promise<Violation[]> {
@@ -34,6 +35,7 @@ export function createAxeAnalysisLayer(options?: {
         }
 
         const results = await new AxeBuilder({ page: browserPage }).analyze();
+        await options?.onRawResults?.(page, results);
 
         const violations: Violation[] = [];
         for (const axeViolation of results.violations) {
