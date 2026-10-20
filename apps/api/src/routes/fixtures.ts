@@ -6,6 +6,7 @@ import { findRepoRoot } from "../env/loadEnv.ts";
 const FIXTURE_KINDS = {
   validation: path.join("validation", "pages"),
   benchmark: path.join("benchmark", "pages"),
+  datacorp: path.join("datacorp", "pages"),
 } as const;
 
 type FixtureKind = keyof typeof FIXTURE_KINDS;

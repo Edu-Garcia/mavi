@@ -428,4 +428,21 @@ describe("App — submissão de URL", () => {
       "http://localhost:3000/fixtures/validation/02-somente-visuais.html",
     );
   });
+
+  it("preenche a URL com uma página do levantamento Datacorp", async () => {
+    const user = userEvent.setup();
+    render(<App analyze={vi.fn()} apiBaseUrl="http://localhost:3000" />);
+
+    expect(
+      screen.getByRole("group", { name: /levantamento datacorp/i }),
+    ).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: /datacorp — formulário sem rótulo/i }),
+    );
+
+    expect(screen.getByLabelText(/^url$/i)).toHaveValue(
+      "http://localhost:3000/fixtures/datacorp/formulario.html",
+    );
+  });
 });

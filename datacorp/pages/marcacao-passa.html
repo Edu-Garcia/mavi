@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Datacorp — Marcação HTML válida</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Source Sans 3", system-ui, sans-serif;
+        background: #f4f1ea;
+        color: #1a1814;
+        line-height: 1.6;
+      }
+      header {
+        background: #0f4c5c;
+        color: #fff;
+        padding: 0.85rem 1.25rem;
+      }
+      header p {
+        margin: 0;
+        font-weight: 600;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1,
+      h2 {
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 0.75rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 1.75rem 0 0.5rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .horario {
+        color: #9a3412;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #333;
+        background: #fff;
+      }
+      a {
+        color: #0b5fff;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+      }
+      input {
+        display: block;
+        width: 100%;
+        max-width: 24rem;
+        box-sizing: border-box;
+        margin-bottom: 0.75rem;
+        padding: 0.65rem 0.75rem;
+        font: inherit;
+        color: #1a1814;
+        background: #fff;
+        border: 1px solid #1a1814;
+        border-radius: 4px;
+      }
+      button {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.65rem 1.1rem;
+        font: inherit;
+        color: #fff;
+        background: #0b5fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p>Levantamento Datacorp</p>
+    </header>
+    <main>
+      <h1>Institucional</h1>
+      <h2>Quem somos</h2>
+      <p>
+        Versão que passa no
+        <a href="https://validator.w3.org/">validador HTML do W3C</a>. Títulos
+        em sequência, lista com itens, identificadores únicos e o botão fora
+        do link.
+      </p>
+
+      <img
+        src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='180'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e8eefc'/%3E%3Ctext%20x='50%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='20'%3EFachada%3C/text%3E%3C/svg%3E"
+        alt="Fachada da loja"
+        width="320"
+        height="180"
+      >
+
+      <ul>
+        <li>Entrega para todo o Brasil</li>
+        <li>Pagamento no cartão</li>
+      </ul>
+
+      <p id="nota-1">Primeiro aviso institucional.</p>
+      <p id="nota-2">Segundo aviso institucional.</p>
+      <p class="horario">Horário de funcionamento: 9h às 18h.</p>
+
+      <p>
+        <a href="https://example.com/sobre">Sobre a loja</a>
+      </p>
+      <p>
+        <a href="#novidades">Receber novidades</a>
+      </p>
+
+      <form id="novidades" action="#novidades" method="get">
+        <label for="news">E-mail para novidades</label>
+        <input id="news" type="email" name="email" autocomplete="email">
+        <button type="submit">Assinar</button>
+      </form>
+    </main>
+  </body>
+</html>

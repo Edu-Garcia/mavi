@@ -10,7 +10,11 @@ import { formatAnalyzeError } from "./api/formatAnalyzeError.ts";
 import { DiagnosticsPanel } from "./components/DiagnosticsPanel.tsx";
 import { MAVI_LOGO_LIGHT_SRC, MaviLogo } from "./components/MaviLogo.tsx";
 import { ViolationsReport } from "./components/ViolationsReport.tsx";
-import { testPageShortcuts } from "./fixtures/testPages.ts";
+import {
+  datacorpPageShortcuts,
+  testPageShortcuts,
+  type TestPageShortcut,
+} from "./fixtures/testPages.ts";
 import { buildAuditReportHtml } from "./report/buildAuditReportHtml.ts";
 import { downloadHtml, fetchAsDataUrl } from "./report/downloadHtml.ts";
 
@@ -44,7 +48,9 @@ export function App({
   const [mode, setMode] = useState<AnalyzeMode>("fix");
   const [view, setView] = useState<ViewState>({ status: "idle" });
   const [exportError, setExportError] = useState<string | null>(null);
-  const fixtures = testPageShortcuts(resolveApiBaseUrl(apiBaseUrl));
+  const apiBase = resolveApiBaseUrl(apiBaseUrl);
+  const fixtures = testPageShortcuts(apiBase);
+  const datacorpPages = datacorpPageShortcuts(apiBase);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -142,27 +148,19 @@ export function App({
             />
           </div>
 
-          <fieldset
+          <ShortcutList
+            legend="Páginas de teste"
+            pages={fixtures}
             disabled={view.status === "loading"}
-            className="m-0 grid gap-3 border-0 p-0"
-          >
-            <legend className="float-none w-full px-0 font-semibold">
-              Páginas de teste
-            </legend>
-            <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-              {fixtures.map((fixture) => (
-                <li key={fixture.id}>
-                  <button
-                    type="button"
-                    className="cursor-pointer rounded-lg border border-border bg-peach px-3 py-1.5 text-sm font-medium text-primary transition-colors duration-200 hover:bg-accent hover:text-primary"
-                    onClick={() => setUrl(fixture.url)}
-                  >
-                    {fixture.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </fieldset>
+            onSelect={setUrl}
+          />
+          <ShortcutList
+            legend="Levantamento Datacorp"
+            description="Controle, uma página correta por critério, as falhas isoladas e uma mista em que formulário e links falham."
+            pages={datacorpPages}
+            disabled={view.status === "loading"}
+            onSelect={setUrl}
+          />
 
           <fieldset
             disabled={view.status === "loading"}
@@ -333,5 +331,41 @@ export function App({
         ) : null}
       </main>
     </div>
+  );
+}
+
+function ShortcutList({
+  legend,
+  description,
+  pages,
+  disabled,
+  onSelect,
+}: {
+  legend: string;
+  description?: string;
+  pages: TestPageShortcut[];
+  disabled: boolean;
+  onSelect: (url: string) => void;
+}) {
+  return (
+    <fieldset disabled={disabled} className="m-0 grid gap-3 border-0 p-0">
+      <legend className="float-none w-full px-0 font-semibold">{legend}</legend>
+      {description ? (
+        <p className="m-0 text-sm text-muted">{description}</p>
+      ) : null}
+      <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+        {pages.map((page) => (
+          <li key={page.id}>
+            <button
+              type="button"
+              className="cursor-pointer rounded-lg border border-border bg-peach px-3 py-1.5 text-sm font-medium text-primary transition-colors duration-200 hover:bg-accent hover:text-primary"
+              onClick={() => onSelect(page.url)}
+            >
+              {page.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </fieldset>
   );
 }

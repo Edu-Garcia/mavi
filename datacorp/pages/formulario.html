@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Datacorp — Formulário sem rótulos</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Source Sans 3", system-ui, sans-serif;
+        background: #f4f1ea;
+        color: #1a1814;
+        line-height: 1.6;
+      }
+      header {
+        background: #0f4c5c;
+        color: #fff;
+        padding: 0.85rem 1.25rem;
+      }
+      header p {
+        margin: 0;
+        font-weight: 600;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1 {
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+        font-size: 1.75rem;
+        margin: 0 0 0.75rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .field {
+        margin: 0 0 1rem;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+      }
+      input,
+      select,
+      textarea {
+        display: block;
+        width: 100%;
+        max-width: 24rem;
+        box-sizing: border-box;
+        margin-top: 0.35rem;
+        padding: 0.65rem 0.75rem;
+        font: inherit;
+        color: #1a1814;
+        background: #fff;
+        border: 1px solid #1a1814;
+        border-radius: 4px;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.65rem;
+        color: #fff;
+        background: #0b5fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin-top: 1.5rem;
+        border: 1px solid #333;
+        background: #fff;
+      }
+      a {
+        color: #0b5fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p>Levantamento Datacorp</p>
+    </header>
+    <main>
+      <h1>Fale conosco</h1>
+      <p>
+        Critério de formulários: cada <code>input</code>, <code>select</code> e
+        <code>textarea</code> precisa de rótulo associado por
+        <code>label for</code>/<code>id</code>, ou de <code>title</code>,
+        <code>aria-label</code> ou <code>aria-labelledby</code>. O botão de
+        envio também precisa de um nome acessível. Nenhum dos controles abaixo
+        atende a isso.
+      </p>
+
+      <form action="#contato" method="get">
+        <div class="field">
+          <!-- Texto visível, mas o label não envolve o campo nem usa for/id -->
+          <label>Nome completo</label>
+          <input type="text" name="nome" autocomplete="name">
+        </div>
+
+        <div class="field">
+          <!-- Só placeholder: não conta como rótulo no critério -->
+          <input
+            type="email"
+            name="email"
+            placeholder="E-mail"
+            autocomplete="email"
+         >
+        </div>
+
+        <div class="field">
+          <select name="assunto">
+            <option value="">Assunto</option>
+            <option>Dúvida sobre pedido</option>
+            <option>Troca ou devolução</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <textarea name="mensagem" rows="4" placeholder="Mensagem"></textarea>
+        </div>
+
+        <div class="actions">
+          <span>Enviar mensagem</span>
+          <!-- Ícone decorativo; o botão fica sem nome acessível -->
+          <button type="submit">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path fill="currentColor" d="M2 10 L18 2 L12 18 L10 11 Z"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <img
+        src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='180'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23e8eefc'/%3E%3Ctext%20x='50%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='20'%3EAtendimento%3C/text%3E%3C/svg%3E"
+        alt="Balcão de atendimento da loja"
+        width="320"
+        height="180"
+     >
+      <p>
+        <a href="https://example.com/ajuda">Central de ajuda</a>
+      </p>
+    </main>
+  </body>
+</html>

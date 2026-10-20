@@ -44,6 +44,28 @@ describe("GET /fixtures", () => {
     expect(response.body).toContain("Somente erros visuais");
   });
 
+  it("serve as páginas do levantamento Datacorp", async () => {
+    const cases = [
+      ["/fixtures/datacorp/controle.html", "Página de controle"],
+      ["/fixtures/datacorp/formulario-passa.html", 'for="nome"'],
+      ["/fixtures/datacorp/links-passa.html", "abre em nova janela"],
+      ["/fixtures/datacorp/imagens-passa.html", 'alt="Setor de roupas"'],
+      ["/fixtures/datacorp/marcacao-passa.html", 'id="nota-1"'],
+      ["/fixtures/datacorp/mista.html", "Página mista"],
+      ["/fixtures/datacorp/formulario.html", "Nome completo"],
+      ["/fixtures/datacorp/links.html", 'target="_blank"'],
+      ["/fixtures/datacorp/imagens.html", "<area"],
+      ["/fixtures/datacorp/marcacao-html.html", "<font"],
+    ] as const;
+
+    for (const [url, marker] of cases) {
+      const response = await app.inject({ method: "GET", url });
+      expect(response.statusCode, url).toBe(200);
+      expect(response.headers["content-type"]).toMatch(/text\/html/);
+      expect(response.body).toContain(marker);
+    }
+  });
+
   it("serve página de benchmark e rejeita path traversal", async () => {
     const ok = await app.inject({
       method: "GET",

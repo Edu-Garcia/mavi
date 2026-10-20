@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Datacorp — Imagens sem alternativa</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Source Sans 3", system-ui, sans-serif;
+        background: #f4f1ea;
+        color: #1a1814;
+        line-height: 1.6;
+      }
+      header {
+        background: #0f4c5c;
+        color: #fff;
+        padding: 0.85rem 1.25rem;
+      }
+      header p {
+        margin: 0;
+        font-weight: 600;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1,
+      h2 {
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 0.75rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 1.75rem 0 0.5rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #333;
+        background: #fff;
+      }
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+      }
+      label {
+        font-weight: 600;
+      }
+      input[type="image"] {
+        width: 44px;
+        height: 44px;
+        border: 0;
+        padding: 0;
+      }
+      a {
+        color: #0b5fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p>Levantamento Datacorp</p>
+    </header>
+    <main>
+      <h1>Catálogo</h1>
+      <p>
+        Critério de imagens: cada <code>img</code>, <code>area</code> e
+        <code>input type="image"</code> precisa de <code>alt</code>, ou de
+        <code>title</code>, <code>aria-label</code> ou
+        <code>aria-labelledby</code>. Os três casos abaixo não têm nenhuma
+        dessas fontes. A ausência de <code>alt</code> também é erro de
+        marcação HTML; o foco desta página é o critério de imagens.
+      </p>
+
+      <h2>Foto do produto</h2>
+      <img
+        src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='180'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23ffffff'/%3E%3Ctext%20x='50%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='20'%3ETênis%20azul%3C/text%3E%3C/svg%3E"
+        width="320"
+        height="180"
+     >
+
+      <h2>Mapa da loja</h2>
+      <p>
+        A figura do mapa tem alternativa. As regiões clicáveis, não.
+      </p>
+      <img
+        src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='180'%3E%3Crect%20width='50%25'%20height='100%25'%20fill='%23dbeafe'/%3E%3Crect%20x='50%25'%20width='50%25'%20height='100%25'%20fill='%23fde68a'/%3E%3Ctext%20x='25%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='16'%3ERoupas%3C/text%3E%3Ctext%20x='75%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='16'%3ECalçados%3C/text%3E%3C/svg%3E"
+        alt="Mapa ilustrado da loja, dividido em roupas e calçados"
+        width="320"
+        height="180"
+        usemap="#mapa-loja"
+     >
+      <map name="mapa-loja">
+        <area shape="rect" coords="0,0,160,180" href="/vestuario">
+        <area shape="rect" coords="160,0,320,180" href="/calcados">
+      </map>
+
+      <h2>Busca</h2>
+      <form action="#busca" method="get">
+        <label for="buscar">Buscar no catálogo</label>
+        <input
+          id="buscar"
+          type="image"
+          name="buscar"
+          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='44'%20height='44'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%230b5fff'/%3E%3Ctext%20x='50%25'%20y='58%25'%20text-anchor='middle'%20fill='%23ffffff'%20font-family='system-ui'%20font-size='14'%3EIr%3C/text%3E%3C/svg%3E"
+          width="44"
+          height="44"
+       >
+      </form>
+
+      <p>
+        <a href="https://example.com/catalogo">Ver o catálogo completo</a>
+      </p>
+    </main>
+  </body>
+</html>

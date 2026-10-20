@@ -128,6 +128,7 @@ docker compose down
 | `GET` | `/pages/:pageId/axe-html` | HTML que o axe analisou |
 | `GET` | `/fixtures/validation/:file` | Páginas HTML de validação (dev) |
 | `GET` | `/fixtures/benchmark/:file` | Páginas HTML do benchmark (dev) |
+| `GET` | `/fixtures/datacorp/:file` | Páginas do levantamento Datacorp (dev) |
 
 Exemplo:
 

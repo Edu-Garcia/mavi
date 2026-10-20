@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Datacorp — Página mista</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Source Sans 3", system-ui, sans-serif;
+        background: #f4f1ea;
+        color: #1a1814;
+        line-height: 1.6;
+      }
+      header {
+        background: #0f4c5c;
+        color: #fff;
+        padding: 0.85rem 1.25rem;
+      }
+      header p {
+        margin: 0;
+        font-weight: 600;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2rem 1.25rem 3rem;
+      }
+      h1,
+      h2 {
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 0.75rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 1.75rem 0 0.5rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .field {
+        margin: 0 0 1rem;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+      }
+      input,
+      select,
+      textarea {
+        display: block;
+        width: 100%;
+        max-width: 24rem;
+        box-sizing: border-box;
+        margin-top: 0.35rem;
+        padding: 0.65rem 0.75rem;
+        font: inherit;
+        color: #1a1814;
+        background: #fff;
+        border: 1px solid #1a1814;
+        border-radius: 4px;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.65rem 1.1rem;
+        font: inherit;
+        color: #fff;
+        background: #0b5fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #333;
+        background: #fff;
+      }
+      .search {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+      }
+      .search label {
+        margin: 0;
+      }
+      input[type="image"] {
+        width: 44px;
+        height: 44px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+      ul {
+        margin: 0 0 1rem;
+        padding-left: 1.25rem;
+      }
+      li {
+        margin: 0.5rem 0;
+      }
+      a,
+      .fake-link {
+        color: #0b5fff;
+      }
+      .fake-link {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p>Levantamento Datacorp</p>
+    </header>
+    <main>
+      <h1>Página mista</h1>
+      <p>
+        Os quatro tipos de conteúdo estão nesta página. Formulário e links
+        falham. Imagens têm texto alternativo e a marcação HTML é válida.
+      </p>
+
+      <h2>Fale conosco</h2>
+      <form action="#contato" method="get">
+        <div class="field">
+          <label>Nome completo</label>
+          <input type="text" name="nome" autocomplete="name">
+        </div>
+        <div class="field">
+          <input type="email" name="email" placeholder="E-mail" autocomplete="email">
+        </div>
+        <div class="field">
+          <select name="assunto">
+            <option value="">Assunto</option>
+            <option>Dúvida sobre pedido</option>
+            <option>Troca ou devolução</option>
+          </select>
+        </div>
+        <div class="field">
+          <textarea name="mensagem" rows="4" placeholder="Mensagem"></textarea>
+        </div>
+        <div class="actions">
+          <span>Enviar mensagem</span>
+          <button type="submit">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path fill="currentColor" d="M2 10 L18 2 L12 18 L10 11 Z"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <h2>Catálogo</h2>
+      <img
+        src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='180'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23ffffff'/%3E%3Ctext%20x='50%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='20'%3ET%C3%AAnis%20azul%3C/text%3E%3C/svg%3E"
+        alt="Tênis azul em fundo branco"
+        width="320"
+        height="180"
+      >
+      <p>Mapa da loja. Cada região clicável tem texto alternativo.</p>
+      <img
+        src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='320'%20height='180'%3E%3Crect%20width='50%25'%20height='100%25'%20fill='%23dbeafe'/%3E%3Crect%20x='50%25'%20width='50%25'%20height='100%25'%20fill='%23fde68a'/%3E%3Ctext%20x='25%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='16'%3ERoupas%3C/text%3E%3Ctext%20x='75%25'%20y='50%25'%20dominant-baseline='middle'%20text-anchor='middle'%20fill='%231a1a1a'%20font-family='system-ui'%20font-size='16'%3ECal%C3%A7ados%3C/text%3E%3C/svg%3E"
+        alt="Mapa ilustrado da loja, dividido em roupas e calçados"
+        width="320"
+        height="180"
+        usemap="#mapa-loja"
+      >
+      <map name="mapa-loja">
+        <area shape="rect" coords="0,0,160,180" href="/vestuario" alt="Setor de roupas">
+        <area shape="rect" coords="160,0,320,180" href="/calcados" alt="Setor de calçados">
+      </map>
+      <form class="search" action="#busca" method="get">
+        <label for="buscar">Buscar no catálogo</label>
+        <input
+          id="buscar"
+          type="image"
+          name="buscar"
+          alt="Buscar no catálogo"
+          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='44'%20height='44'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%230b5fff'/%3E%3Ctext%20x='50%25'%20y='58%25'%20text-anchor='middle'%20fill='%23ffffff'%20font-family='system-ui'%20font-size='14'%3EIr%3C/text%3E%3C/svg%3E"
+          width="44"
+          height="44"
+        >
+      </form>
+
+      <h2>Parceiros</h2>
+      <ul>
+        <li>
+          <a
+            href="https://example.com/parceiro"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Site do parceiro</a
+          >
+        </li>
+        <li>
+          <span
+            class="fake-link"
+            onclick="window.location.href='https://example.com/ofertas'"
+            >Ver ofertas da semana</span
+          >
+        </li>
+        <li>
+          <a href="https://example.com/sobre">Sobre a loja</a>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>
