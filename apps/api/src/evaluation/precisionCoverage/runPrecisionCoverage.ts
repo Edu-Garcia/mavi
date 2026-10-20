@@ -48,6 +48,12 @@ import type {
 } from "./types.ts";
 import { VALIDATION_PAGE_IDS } from "./types.ts";
 import { loadResume } from "./loadResume.ts";
+import {
+  isQuotaVisionError,
+  retryVisionCall,
+  VISION_RETRY_ATTEMPTS,
+  VISION_RETRY_DELAY_MS,
+} from "./visionRetry.ts";
 import { writeCampaignReport } from "./writeReport.ts";
 
 const CHOICES = [
@@ -104,19 +110,6 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function visionErrorText(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
-function isQuotaVisionError(error: unknown): boolean {
-  return /429|limite de requisições|quota/i.test(visionErrorText(error));
-}
-
-function isRetryableVisionError(error: unknown): boolean {
-  const message = visionErrorText(error);
-  return /503|alta demanda/.test(message) && !isQuotaVisionError(error);
-}
-
 function createQuotaSkipVisionLayer(): ReturnType<typeof createVisionAnalysisLayer> {
   return {
     async analyze() {
@@ -154,17 +147,17 @@ function withVisionRetry(
   layer: ReturnType<typeof createVisionAnalysisLayer>,
 ): ReturnType<typeof createVisionAnalysisLayer> {
   return {
-    async analyze(page, analysisRun) {
-      try {
-        return await layer.analyze(page, analysisRun);
-      } catch (error) {
-        if (!isRetryableVisionError(error)) {
-          throw error;
-        }
-        console.log(`[visão] retry após: ${error instanceof Error ? error.message : error}`);
-        await delay(8_000);
-        return layer.analyze(page, analysisRun);
-      }
+    analyze(page, analysisRun) {
+      return retryVisionCall(() => layer.analyze(page, analysisRun), {
+        attempts: VISION_RETRY_ATTEMPTS,
+        delayMs: VISION_RETRY_DELAY_MS,
+        onRetry: (error, attempt, attempts) => {
+          const message = error instanceof Error ? error.message : String(error);
+          console.log(
+            `[visão] aguardando ${VISION_RETRY_DELAY_MS}ms para tentar de novo (${attempt + 1}/${attempts}) após: ${message}`,
+          );
+        },
+      });
     },
   };
 }

@@ -13,6 +13,7 @@ import {
 } from "./scoreByConfiguration.ts";
 import { saveCapturedPage } from "./saveArtifacts.ts";
 import { scoreIncompleteVisualRound } from "./failureCases.ts";
+import { isRetryableVisionError } from "./visionRetry.ts";
 import type {
   BenchmarkPageId,
   BenchmarkPageRoundRecord,
@@ -245,8 +246,7 @@ async function runOnePage(options: {
       if (
         incomplete.status === "incomplete" &&
         tryIndex === 0 &&
-        /503|alta demanda/.test(incomplete.reason ?? "") &&
-        !/429|limite de requisições/i.test(incomplete.reason ?? "")
+        isRetryableVisionError(new Error(incomplete.reason ?? ""))
       ) {
         lastError = incomplete.reason ?? "visão incompleta";
         continue;
