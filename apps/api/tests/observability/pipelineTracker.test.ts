@@ -29,6 +29,16 @@ describe("pipeline log", () => {
     expect(summarizeLayerError(new Error("Gemini indisponível"))).toBe(
       "Gemini indisponível",
     );
+    expect(summarizeLayerError(new Error("Gemini API falhou (429)"))).toBe(
+      "Gemini 429 — limite de requisições",
+    );
+    expect(
+      summarizeLayerError(
+        new Error(
+          "Groq chat completion failed (429) model=openai/gpt-oss-120b: rate limit",
+        ),
+      ),
+    ).toBe("Groq 429 — limite de requisições (openai/gpt-oss-120b)");
   });
 
   it("escreve o bloco da análise com espaço entre as etapas", () => {

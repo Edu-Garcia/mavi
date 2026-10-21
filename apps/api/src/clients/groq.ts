@@ -75,7 +75,7 @@ export function createGroqClient(
       if (!response.ok) {
         const detail = await response.text();
         throw new Error(
-          `Groq chat completion failed (${response.status}): ${detail}`,
+          `Groq chat completion failed (${response.status}) model=${request.model}: ${detail}`,
         );
       }
 

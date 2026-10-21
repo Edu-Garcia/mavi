@@ -57,10 +57,22 @@ export function summarizeLayerError(error: unknown): string {
   const raw = error instanceof Error ? error.message : String(error);
   const firstLine = (raw.split(/\r?\n/)[0] ?? raw).trim();
 
-  if (/503/.test(raw) && /high demand|UNAVAILABLE|alta demanda/i.test(raw)) {
+  const isGroq = /groq/i.test(firstLine);
+
+  if (
+    !isGroq &&
+    /503/.test(raw) &&
+    /high demand|UNAVAILABLE|alta demanda/i.test(raw)
+  ) {
     return "Gemini 503 — alta demanda, tente de novo";
   }
   if (/429/.test(firstLine)) {
+    if (isGroq) {
+      const model = firstLine.match(/model=(\S+?)(?::|\s|$)/)?.[1];
+      return model
+        ? `Groq 429 — limite de requisições (${model})`
+        : "Groq 429 — limite de requisições";
+    }
     return "Gemini 429 — limite de requisições";
   }
   if (/\b401\b|\b403\b/.test(firstLine) && /gemini/i.test(firstLine)) {
